@@ -1,0 +1,89 @@
+/* Brutalist Streamlit CSS */
+
+:root {
+    --bg-color: #F5F5F0;
+    --text-color: #000000;
+    --accent-color: #FF2800;
+    --border-color: #000000;
+    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', Consolas, Monaco, monospace;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-sans);
+}
+
+.stApp {
+    background-color: var(--bg-color);
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 900;
+    color: var(--text-color);
+}
+
+/* Numbers and metrics */
+.stMetric, .css-1wivap2, [data-testid="stMetricValue"] {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    color: var(--text-color);
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: var(--text-color) !important;
+    color: #FFFFFF !important;
+    border-radius: 0 !important;
+    border: 2px solid var(--text-color) !important;
+    text-transform: uppercase;
+    font-weight: 900 !important;
+    padding: 0.5rem 1rem !important;
+    box-shadow: 4px 4px 0px var(--accent-color) !important;
+    transition: none !important;
+}
+
+.stButton > button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--accent-color) !important;
+}
+
+/* Input fields */
+.stSelectbox > div > div, .stNumberInput > div > div, .stTextInput > div > div {
+    border-radius: 0 !important;
+    border: 2px solid var(--border-color) !important;
+    background-color: #FFFFFF !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #1A1A1A;
+    color: #FFFFFF;
+    border-right: 4px solid var(--text-color);
+}
+
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p {
+    color: #FFFFFF;
+}
+
+/* No rounded corners anywhere */
+* {
+    border-radius: 0 !important;
+}
+
+/* Dataframes / Tables */
+.stDataFrame {
+    border: 2px solid var(--border-color) !important;
+}
+
+table {
+    border-collapse: collapse !important;
+}
+
+th, td {
+    border: 1px solid var(--border-color) !important;
+}

@@ -1,0 +1,21 @@
+vehicle_id,brand,model,variant,year,fuel_type,transmission,engine_cc,power_bhp,torque_nm,claimed_mileage_kmpl,seating_capacity,kerb_weight_kg,fuel_tank_l,battery_capacity_kwh,range_km,charging_speed_kw,warranty_years,service_interval_km,base_price_lakh
+1,Tata,Nexon EV,Fearless+,2024,Electric,Automatic,,143,215,,5,1480,,40.5,465,7.2,3,15000,17.49
+2,Tata,Nexon,XZ+,2024,Petrol,Manual,1199,120,170,17.01,5,1196,44,,,,2,7500,10.49
+3,Hyundai,Creta,SX,2024,Petrol,Manual,1497,115,144,16.8,5,1345,50,,,,3,10000,14.99
+4,Hyundai,Creta Electric,Long Range,2024,Electric,Automatic,,171,255,,5,1745,,51.4,473,11.0,3,15000,21.99
+5,Kia,Seltos,HTX+,2024,Petrol,Manual,1497,115,144,16.5,5,1385,50,,,,3,10000,15.90
+6,Maruti Suzuki,Brezza,ZXi+,2024,Petrol,Manual,1462,103,137,17.38,5,1165,48,,,,2,10000,13.98
+7,Maruti Suzuki,Baleno,Zeta,2024,Petrol,Manual,1197,90,113,22.35,5,920,37,,,,2,10000,8.99
+8,Maruti Suzuki,Swift,ZXi+,2024,Petrol,Manual,1197,82,112,24.8,5,900,37,,,,2,10000,8.47
+9,Tata,Punch,Accomplished,2024,Petrol,Manual,1199,86,113,18.8,5,995,40,,,,2,7500,8.49
+10,Tata,Punch EV,Empowered+,2024,Electric,Automatic,,122,190,,5,1310,,35.0,421,7.2,3,15000,12.99
+11,MG,Windsor EV,Excite,2024,Electric,Automatic,,136,200,,5,1665,,38.0,331,11.0,3,15000,15.00
+12,Mahindra,BE 6,Pack Two,2025,Electric,Automatic,,231,380,,5,1960,,59.0,535,11.5,3,20000,22.99
+13,Hyundai,i20,Asta,2024,Petrol,Manual,1197,83,114,20.35,5,975,37,,,,3,10000,9.84
+14,Toyota,Innova Hycross,ZX Hybrid,2024,Hybrid,Automatic,1987,186,206,21.1,7,1870,55,0.7,,,3,10000,28.99
+15,Honda,City,ZX CVT,2024,Petrol,Automatic,1498,121,145,17.8,5,1150,40,,,,3,10000,14.98
+16,Volkswagen,Taigun,Topline,2024,Petrol,Automatic,1498,150,250,16.35,5,1299,50,,,,4,10000,17.99
+17,Skoda,Slavia,Style TSI AT,2024,Petrol,Automatic,1498,150,250,16.35,5,1285,47,,,,4,10000,17.99
+18,Toyota,Urban Cruiser Hyryder,V Hybrid,2024,Hybrid,Automatic,1490,116,141,27.97,5,1455,42,,,,3,10000,19.49
+19,Mahindra,Scorpio N,Z8,2024,Petrol,Manual,1997,200,380,13.0,7,2000,60,,,,3,10000,21.99
+20,Maruti Suzuki,Grand Vitara,Alpha+ Hybrid,2024,Hybrid,Automatic,1490,116,141,27.97,5,1430,42,,,,3,10000,19.65

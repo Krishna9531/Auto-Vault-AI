@@ -1,0 +1,27 @@
+vehicle_id,brand,model,variant,body_type,segment,fuel_type,transmission,manufacture_year,ex_showroom_price,purchase_price_lakh,engine_cc,power_bhp,torque_nm,claimed_mileage_kmpl,battery_capacity_kwh,electric_range_km,seating_capacity,ground_clearance_mm,safety_rating_stars,warranty_years,baseline_residual_5yr
+VM-MAR-SWF-01,Maruti Suzuki,Swift,ZXi,Hatchback,B,Petrol,Manual,2022,780000,7.80,1197,88.5,113.0,23.2,,5,163,2,2,4.68
+VM-MAR-BLN-01,Maruti Suzuki,Baleno,Alpha,Hatchback,B,Petrol,Automatic,2023,930000,9.30,1197,88.5,113.0,22.9,,5,170,3,2,5.77
+VM-MAR-BRZ-01,Maruti Suzuki,Brezza,ZXi Plus,SUV,C,Petrol,Automatic,2023,1380000,13.80,1462,101.6,136.8,19.8,,5,198,4,2,8.56
+VM-MAR-ERT-01,Maruti Suzuki,Ertiga,VXi CNG,MUV,C,CNG,Manual,2022,1050000,10.50,1462,87.0,121.5,26.1,,7,180,3,2,6.51
+VM-HYU-I20-01,Hyundai,i20,Asta Turbo,Hatchback,B,Petrol,DCT,2022,1020000,10.20,998,118.4,172.0,20.0,,5,170,3,3,5.92
+VM-HYU-CRT-01,Hyundai,Creta,SX(O) Turbo,SUV,C,Petrol,DCT,2022,1850000,18.50,1497,138.0,242.0,16.8,,5,190,3,3,11.10
+VM-HYU-CRT-02,Hyundai,Creta,SX Diesel,SUV,C,Diesel,Automatic,2023,1780000,17.80,1493,113.4,250.0,18.5,,5,190,3,3,10.32
+VM-HYU-VNA-01,Hyundai,Verna,SX(O) Turbo,Sedan,C,Petrol,DCT,2023,1730000,17.30,1482,157.8,253.0,20.6,,5,170,5,3,9.86
+VM-TAT-NXN-01,Tata,Nexon,XZ Plus,SUV,C,Petrol,Manual,2022,1220000,12.20,1199,118.2,170.0,17.4,,5,208,5,3,7.32
+VM-TAT-NXN-02,Tata,Nexon,XZ Plus Diesel,SUV,C,Diesel,Manual,2023,1360000,13.60,1497,113.4,260.0,23.2,,5,208,5,3,7.89
+VM-TAT-NEV-01,Tata,Nexon EV,Empowered Plus,SUV,C,Electric,Automatic,2023,1950000,19.50,0,142.7,215.0,,40.5,465,5,190,5,3,9.75
+VM-TAT-PNC-01,Tata,Punch,Creative,SUV,B,Petrol,Manual,2023,880000,8.80,1199,86.8,115.0,18.9,,5,187,5,3,5.46
+VM-TAT-HAR-01,Tata,Harrier,Fearless Plus,SUV,D,Diesel,Automatic,2023,2400000,24.00,1956,167.6,350.0,14.6,,5,205,5,3,13.92
+VM-MAH-X30-01,Mahindra,XUV300,W8 Option,SUV,C,Diesel,Manual,2022,1320000,13.20,1497,115.0,300.0,20.0,,5,180,5,3,7.66
+VM-MAH-X70-01,Mahindra,XUV700,AX7 L AWD,SUV,D,Diesel,Automatic,2023,2650000,26.50,2198,182.4,450.0,16.5,,7,200,5,3,15.90
+VM-MAH-SCP-01,Mahindra,Scorpio-N,Z8 L,SUV,D,Diesel,Automatic,2023,2350000,23.50,2198,172.4,400.0,15.2,,7,187,5,3,14.57
+VM-MAH-THR-01,Mahindra,Thar,LX 4x4,SUV,C,Diesel,Automatic,2022,1680000,16.80,2184,130.0,300.0,15.0,,4,226,4,3,11.42
+VM-KIA-SEL-01,Kia,Seltos,GTX Plus Turbo,SUV,C,Petrol,DCT,2023,1980000,19.80,1482,157.8,253.0,17.9,,5,190,3,3,11.48
+VM-KIA-SON-01,Kia,Sonet,HTX Diesel,SUV,B,Diesel,Automatic,2022,1250000,12.50,1493,113.4,250.0,19.0,,5,205,3,3,7.25
+VM-TOY-INV-01,Toyota,Innova Hycross,ZX(O) Hybrid,MUV,D,Hybrid,CVT,2023,3050000,30.50,1987,183.7,206.0,23.2,,7,185,5,3,21.35
+VM-TOY-FRT-01,Toyota,Fortuner,4x4 AT,SUV,E,Diesel,Automatic,2022,4200000,42.00,2755,201.2,500.0,14.4,,7,225,5,3,29.40
+VM-HON-CTY-01,Honda,City,ZX e:HEV Hybrid,Sedan,C,Hybrid,CVT,2023,2050000,20.50,1498,124.0,253.0,27.1,,5,165,5,3,13.33
+VM-HON-ELV-01,Honda,Elevate,ZX CVT,SUV,C,Petrol,CVT,2023,1620000,16.20,1498,119.3,145.0,16.9,,5,220,4,3,9.88
+VM-MG-ZSE-01,MG,ZS EV,Exclusive Pro,SUV,C,Electric,Automatic,2023,2500000,25.00,0,174.3,280.0,,50.3,461,5,177,5,5,12.50
+VM-VOL-TRG-01,Volkswagen,Taigun,GT Plus,SUV,C,Petrol,DCT,2023,1900000,19.00,1498,147.5,250.0,17.8,,5,188,5,4,10.83
+VM-SKO-KUS-01,Skoda,Kushaq,Monte Carlo 1.5,SUV,C,Petrol,DCT,2023,1950000,19.50,1498,147.5,250.0,17.8,,5,188,5,4,11.12
