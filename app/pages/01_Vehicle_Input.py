@@ -703,7 +703,7 @@ st.markdown("""
 fin1, fin2, fin3, fin4 = st.columns(4)
 with fin1:
     on_road = st.number_input("ON-ROAD PRICE (Rs.L)",
-                               1.0, 600.0, round(ex_price * 1.10, 1), 0.10)
+                               1.0, 10000.0, round(ex_price * 1.10, 1), 0.10)
 with fin2:
     down_pct = st.slider("DOWN PAYMENT %", 0, 100, 20, 5)
 with fin3:
