@@ -20,6 +20,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Custom navigation
+try:
+    from app.components.navigation import build_sidebar
+    build_sidebar()
+except Exception as e:
+    pass
+
+
 # ── Design System ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>

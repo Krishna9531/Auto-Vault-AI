@@ -4,6 +4,14 @@ from pathlib import Path
 
 st.set_page_config(page_title='Compare', page_icon='🚗', layout='wide')
 
+# Custom navigation
+try:
+    from app.components.navigation import build_sidebar
+    build_sidebar()
+except Exception as e:
+    pass
+
+
 def load_css():
     css_path = Path(__file__).parent.parent / "styles" / "brutalist.css"
     if css_path.exists():

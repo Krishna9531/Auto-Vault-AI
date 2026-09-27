@@ -13,6 +13,14 @@ import datetime
 
 st.set_page_config(page_title="Financial Risk | AUTOVAULT AI", page_icon="🚗", layout="wide")
 
+# Custom navigation
+try:
+    from app.components.navigation import build_sidebar
+    build_sidebar()
+except Exception as e:
+    pass
+
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');

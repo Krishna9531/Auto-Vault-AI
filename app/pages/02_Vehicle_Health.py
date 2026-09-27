@@ -12,6 +12,14 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="Vehicle Health | AUTOVAULT AI", page_icon="🚗", layout="wide")
 
+# Custom navigation
+try:
+    from app.components.navigation import build_sidebar
+    build_sidebar()
+except Exception as e:
+    pass
+
+
 # ── Brutalist CSS ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
