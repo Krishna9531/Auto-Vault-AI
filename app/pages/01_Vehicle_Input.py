@@ -16,7 +16,7 @@ import datetime
 def format_price(val_lakhs):
     if val_lakhs >= 100:
         return f"Rs.{val_lakhs/100:.2f}Cr"
-    return format_price(val_lakhs)
+    return f"Rs.{val_lakhs:.2f}L"
 
 
 st.set_page_config(
@@ -449,18 +449,31 @@ segment = st.radio("FILTER BY SEGMENT", ["ALL", "Volume", "Luxury", "Ultra Luxur
 filtered_brands = sorted([b for b, s in SEGMENTS.items() if segment == "ALL" or s == segment])
 
 # Single, clean 3-column selector
-sel1, sel2, sel3 = st.columns(3)
+sel1, sel2, sel3, sel4 = st.columns(4)
 
 with sel1:
     brand = st.selectbox("BRAND", filtered_brands,
-                         index=filtered_brands.index("Hyundai") if "Hyundai" in filtered_brands else 0,
-                         help="Choose manufacturer")
+                         index=filtered_brands.index("Hyundai") if "Hyundai" in filtered_brands else 0)
 
-bdata    = DB.get(brand, {})
-models   = list(bdata.keys())
+bdata = DB.get(brand, {})
+
+# Find all unique body types (segments) for this brand
+all_body_types = list(set([data.get("seg", "Other") for m, data in bdata.items()]))
+all_body_types.sort()
 
 with sel2:
-    model = st.selectbox("MODEL", models, help="Model updates variants and prices automatically")
+    body_type = st.selectbox("BODY TYPE", ["All"] + all_body_types)
+
+if body_type == "All":
+    models = list(bdata.keys())
+else:
+    models = [m for m, data in bdata.items() if data.get("seg") == body_type]
+    
+# Fallback if list is empty for some reason
+if not models: models = list(bdata.keys())
+
+with sel3:
+    model = st.selectbox("MODEL", models)
 
 mdata    = bdata.get(model, {})
 variants = mdata.get("v", ["Standard"])
@@ -468,9 +481,9 @@ prices   = mdata.get("p", [10.0])
 fuels    = mdata.get("f", ["Petrol"])
 seg_name = mdata.get("seg", "")
 
-with sel3:
+with sel4:
     variant_opts = [f"{v}  —  {format_price(p)}" for v, p in zip(variants, prices)]
-    v_sel = st.selectbox("VARIANT", variant_opts, help="Price shown is 2025 ex-showroom")
+    v_sel = st.selectbox("VARIANT", variant_opts)
     vi       = variant_opts.index(v_sel)
     variant  = variants[vi]
     ex_price = prices[vi]
@@ -525,9 +538,9 @@ st.markdown("""
 
 u1, u2, u3, u4 = st.columns(4)
 with u1:
-    mfg_year = st.selectbox("YEAR", list(range(2025,2014,-1)), help="Manufacturing year")
+    mfg_year = st.selectbox("YEAR", list(range(2025,2014,-1)))
 with u2:
-    odometer = st.number_input("ODOMETER (KM)", 0, 500000, 12000, 500, help="Current km on clock")
+    odometer = st.number_input("ODOMETER (KM)", 0, 500000, 12000, 500)
 with u3:
     annual_km = st.slider("ANNUAL KM", 3000, 60000, 12000, 1000)
 with u4:
@@ -537,8 +550,7 @@ u5, u6 = st.columns(2)
 with u5:
     city = st.selectbox("CITY", CITIES)
 with u6:
-    income = st.number_input("MONTHLY INCOME Rs. (optional)", 0, 50_000_000, 0, 10000,
-                              help="For ownership burden % — leave 0 to skip")
+    income = st.number_input("MONTHLY INCOME Rs. (optional)", 0, 50_000_000, 0, 10000)
 
 current_year = datetime.datetime.now().year
 age = max(0, current_year - mfg_year)
@@ -671,8 +683,7 @@ if fuel_type == "EV":
     with ev2:
         charging_freq = st.selectbox("CHARGING FREQUENCY", ["Daily","Every 2-3 Days","Weekly","Rarely"])
     with ev3:
-        fast_charge_pct = st.slider("FAST CHARGING %", 0, 100, 20,
-                                     help=">50% fast charging degrades battery faster")
+        fast_charge_pct = st.slider("FAST CHARGING %", 0, 100, 20)
     if fast_charge_pct > 60:
         st.warning(f"High fast charging ({fast_charge_pct}%) reduces battery lifespan. Recommend <40% for longevity.")
 
@@ -692,8 +703,7 @@ st.markdown("""
 fin1, fin2, fin3, fin4 = st.columns(4)
 with fin1:
     on_road = st.number_input("ON-ROAD PRICE (Rs.L)",
-                               1.0, 600.0, round(ex_price * 1.10, 1), 0.10,
-                               help="Ex-showroom + RTO + Insurance. Typically ex-showroom × 1.08 to 1.12")
+                               1.0, 600.0, round(ex_price * 1.10, 1), 0.10)
 with fin2:
     down_pct = st.slider("DOWN PAYMENT %", 0, 100, 20, 5)
 with fin3:
