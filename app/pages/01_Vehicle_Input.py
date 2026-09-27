@@ -1,591 +1,754 @@
 # -*- coding: utf-8 -*-
 """
-01 Vehicle Input - AUTOVAULT AI
-Complete vehicle input form with real Indian car brands, models, variants, and prices.
+01 Vehicle Input — AUTOVAULT AI
+UX Principles Applied: Affordances · Signifiers · Visual Hierarchy ·
+8px Grid · Typography Scale · Color Theory · Shadows · Micro/Macro Interactions
 """
-import streamlit as st
-from pathlib import Path
 import sys
+from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-st.set_page_config(page_title="Vehicle Input | AUTOVAULT AI", page_icon="🚗", layout="wide",
-                   initial_sidebar_state="collapsed")
+import streamlit as st
 
+st.set_page_config(
+    page_title="Vehicle Input | AUTOVAULT AI",
+    page_icon="🚗",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# ── Load global design system ─────────────────────────────────────────────────
+css_path = Path(__file__).parent.parent / "styles" / "brutalist.css"
+if css_path.exists():
+    st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+
+# ── Additional page-specific micro-interaction styles ─────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Inter:wght@300;400;700;900&display=swap');
-
-*, body, .stApp { background-color: #F5F5F0 !important; font-family: 'Inter', system-ui, sans-serif; }
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 2rem 3rem !important; max-width: 1400px; }
-
-h1, h2, h3 { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 900; color: #1A1A1A; }
-
-/* Section panels */
-.section-panel {
-    background: white;
-    border: 2px solid #1A1A1A;
-    padding: 28px 28px 20px 28px;
-    margin-bottom: 20px;
-}
-.section-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #FF2800;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-bottom: 4px;
-}
-.section-title {
-    font-size: 1.2rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #1A1A1A;
-    border-bottom: 2px solid #1A1A1A;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+/* Animated selected state for brand card */
+.brand-selected {
+  border-color: var(--c-red) !important;
+  box-shadow: var(--shadow-red) !important;
+  transform: translate(-2px,-2px);
 }
 
-/* Price badge */
-.price-badge {
-    display: inline-block;
-    background: #1A1A1A;
-    color: white;
-    padding: 6px 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    margin: 8px 0 4px 0;
+/* Sticky bottom bar */
+.sticky-cta {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--c-ink);
+  border-top: 3px solid var(--c-red);
+  padding: 14px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 999;
+  gap: 24px;
 }
-.price-badge-red {
-    display: inline-block;
-    background: #FF2800;
-    color: white;
-    padding: 6px 14px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 0.85rem;
+.sticky-vehicle-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-.segment-tag {
-    display: inline-block;
-    border: 1.5px solid #1A1A1A;
-    padding: 2px 8px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-left: 8px;
-    vertical-align: middle;
+.sticky-price {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--c-red);
+}
+/* Spacer for sticky bar */
+.sticky-spacer { height: 80px; }
+
+/* Completion ring */
+.completion-ring {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--c-text-muted);
 }
 
-/* Streamlit widget overrides */
-.stSelectbox > div > div, .stTextInput > div > div > input,
-.stNumberInput > div > div > input {
-    border: 2px solid #1A1A1A !important;
-    border-radius: 0 !important;
-    background: white !important;
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
+/* Number chip */
+.n-chip {
+  background: var(--c-ink);
+  color: white;
+  width: 28px; height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  flex-shrink: 0;
 }
-.stSelectbox > div > div:focus-within, .stTextInput > div > div > input:focus {
-    border-color: #FF2800 !important;
-    box-shadow: none !important;
-}
-.stSlider > div > div > div { background: #1A1A1A !important; }
-.stSlider [data-testid="stThumbValue"] { color: #FF2800 !important; }
+.n-chip.done { background: var(--c-red); }
 
-/* Radio buttons */
-.stRadio > div { gap: 8px !important; }
-.stRadio label {
-    border: 2px solid #1A1A1A !important;
-    padding: 6px 14px !important;
-    font-weight: 700 !important;
-    font-size: 0.82rem !important;
-    cursor: pointer;
-    background: white !important;
+/* Fuel type visual buttons */
+.fuel-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 12px 0;
 }
-.stRadio [data-testid="stMarkdownContainer"] p { font-size: 0.82rem; font-weight: 700; }
-
-/* Analyze button */
-.stButton > button[kind="primary"] {
-    background: #1A1A1A !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 0 !important;
-    font-family: 'IBM Plex Mono', monospace !important;
-    font-weight: 700 !important;
-    font-size: 1.05rem !important;
-    letter-spacing: 0.2em !important;
-    text-transform: uppercase !important;
-    padding: 1rem !important;
-    transition: background 0.15s !important;
+.fuel-btn {
+  background: white;
+  border: 2px solid var(--c-border);
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 120ms var(--ease);
+  box-shadow: 2px 2px 0 var(--c-border);
 }
-.stButton > button[kind="primary"]:hover { background: #FF2800 !important; }
-.stButton > button[kind="secondary"] {
-    background: white !important;
-    color: #1A1A1A !important;
-    border: 2px solid #1A1A1A !important;
-    border-radius: 0 !important;
-    font-weight: 700 !important;
+.fuel-btn:hover {
+  background: var(--c-ink);
+  color: white;
+  transform: translate(-1px,-1px);
+  box-shadow: 3px 3px 0 var(--c-red);
 }
-
-/* Tabs */
-.stTabs [data-baseweb="tab-list"] { gap: 0; border-bottom: 2px solid #1A1A1A !important; }
-.stTabs [data-baseweb="tab"] {
-    border: 2px solid #1A1A1A !important;
-    border-bottom: none !important;
-    border-radius: 0 !important;
-    font-weight: 700 !important;
-    font-size: 0.78rem !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
-    padding: 8px 18px !important;
-    background: white !important;
-    margin-right: 4px;
+.fuel-btn.sel {
+  background: var(--c-ink);
+  color: white;
+  border-color: var(--c-red);
+  box-shadow: 3px 3px 0 var(--c-red);
 }
-.stTabs [aria-selected="true"] { background: #1A1A1A !important; color: white !important; }
+.fuel-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.fuel-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# REAL VEHICLE DATABASE
+# DATA
 # ═══════════════════════════════════════════════════════════════════════════════
 
 VEHICLE_DB = {
-    # ── MARUTI SUZUKI ──────────────────────────────────────────────────────────
     "Maruti Suzuki": {
-        "Alto K10":     {"variants": ["STD", "LXI", "VXI", "ZXI", "ZXI+"], "prices": [3.99, 4.26, 4.79, 5.45, 5.83], "fuel": ["Petrol", "CNG"], "segment": "Hatchback"},
-        "Swift":        {"variants": ["LXI", "VXI", "ZXI", "ZXI+"], "prices": [6.49, 7.49, 8.49, 9.64], "fuel": ["Petrol", "CNG"], "segment": "Hatchback"},
-        "Baleno":       {"variants": ["Sigma", "Delta", "Zeta", "Alpha"], "prices": [6.61, 7.45, 8.45, 9.88], "fuel": ["Petrol", "CNG"], "segment": "Hatchback"},
-        "Dzire":        {"variants": ["LXI", "VXI", "ZXI", "ZXI+"], "prices": [6.79, 7.81, 8.85, 9.93], "fuel": ["Petrol", "CNG"], "segment": "Sedan"},
-        "Ertiga":       {"variants": ["LXI", "VXI", "ZXI", "ZXI+"], "prices": [8.69, 10.44, 12.09, 13.08], "fuel": ["Petrol", "CNG"], "segment": "MPV"},
-        "Brezza":       {"variants": ["LXI", "VXI", "ZXI", "ZXI+", "ZXI+ Dual Tone"], "prices": [8.34, 10.49, 12.52, 14.14, 14.58], "fuel": ["Petrol", "CNG"], "segment": "SUV"},
-        "Grand Vitara": {"variants": ["Sigma", "Delta", "Zeta", "Alpha", "Alpha+ Hybrid"], "prices": [10.70, 13.45, 16.45, 18.99, 19.99], "fuel": ["Petrol", "Hybrid"], "segment": "SUV"},
-        "Jimny":        {"variants": ["Zeta", "Alpha"], "prices": [12.74, 15.05], "fuel": ["Petrol"], "segment": "Off-Road SUV"},
-        "Fronx":        {"variants": ["Sigma", "Delta", "Delta+", "Zeta", "Alpha"], "prices": [7.51, 8.97, 10.04, 11.41, 13.06], "fuel": ["Petrol", "CNG"], "segment": "SUV"},
+        "Alto K10":     {"v": ["STD","LXI","VXI","ZXI","ZXI+"],                        "p": [3.99,4.26,4.79,5.45,5.83],          "f": ["Petrol","CNG"],          "seg": "Hatchback"},
+        "Swift":        {"v": ["LXI","VXI","ZXI","ZXI+"],                               "p": [6.49,7.49,8.49,9.64],               "f": ["Petrol","CNG"],          "seg": "Hatchback"},
+        "Baleno":       {"v": ["Sigma","Delta","Zeta","Alpha"],                          "p": [6.61,7.45,8.45,9.88],               "f": ["Petrol","CNG"],          "seg": "Hatchback"},
+        "Dzire":        {"v": ["LXI","VXI","ZXI","ZXI+"],                               "p": [6.79,7.81,8.85,9.93],               "f": ["Petrol","CNG"],          "seg": "Sedan"},
+        "Fronx":        {"v": ["Sigma","Delta","Delta+","Zeta","Alpha"],                 "p": [7.51,8.97,10.04,11.41,13.06],       "f": ["Petrol","CNG"],          "seg": "Coupe SUV"},
+        "Brezza":       {"v": ["LXI","VXI","ZXI","ZXI+","ZXI+ Dual Tone"],              "p": [8.34,10.49,12.52,14.14,14.58],      "f": ["Petrol","CNG"],          "seg": "SUV"},
+        "Ertiga":       {"v": ["LXI","VXI","ZXI","ZXI+"],                               "p": [8.69,10.44,12.09,13.08],            "f": ["Petrol","CNG"],          "seg": "MPV"},
+        "Grand Vitara": {"v": ["Sigma","Delta","Zeta","Alpha","Alpha+ Hybrid"],          "p": [10.70,13.45,16.45,18.99,19.99],     "f": ["Petrol","Hybrid"],       "seg": "SUV"},
+        "Jimny":        {"v": ["Zeta","Alpha"],                                          "p": [12.74,15.05],                       "f": ["Petrol"],                "seg": "Off-Road SUV"},
     },
-
-    # ── HYUNDAI ────────────────────────────────────────────────────────────────
     "Hyundai": {
-        "i20":          {"variants": ["Era", "Magna", "Sportz", "Asta", "Asta (O)"], "prices": [7.04, 8.27, 9.84, 11.12, 12.10], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "Hatchback"},
-        "Venue":        {"variants": ["E", "S", "S+", "SX", "SX+", "SX(O)"], "prices": [7.94, 9.53, 10.47, 12.08, 13.12, 13.57], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "SUV"},
-        "Creta":        {"variants": ["E", "EX", "S", "S+", "SX", "SX(O)"], "prices": [11.00, 12.50, 14.25, 16.50, 18.75, 20.15], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "SUV"},
-        "Creta Electric":{"variants": ["Executive", "Smart", "Smart+", "Prime", "Prime+", "Excellence"], "prices": [17.99, 18.99, 19.89, 21.40, 22.60, 23.50], "fuel": ["EV"], "segment": "Electric SUV"},
-        "Alcazar":      {"variants": ["Prestige", "Prestige(O)", "Platinum", "Signature", "Signature(O)"], "prices": [14.99, 16.77, 18.18, 20.17, 21.45], "fuel": ["Petrol", "Diesel"], "segment": "3-Row SUV"},
-        "Tucson":       {"variants": ["Platinum", "Signature 2WD", "Signature AWD"], "prices": [26.93, 32.25, 34.59], "fuel": ["Petrol", "Diesel"], "segment": "Premium SUV"},
-        "Ioniq 5":      {"variants": ["RWD Standard", "RWD Long Range", "AWD Long Range"], "prices": [44.95, 46.95, 60.45], "fuel": ["EV"], "segment": "Electric SUV"},
+        "i20":          {"v": ["Era","Magna","Sportz","Asta","Asta (O)"],                 "p": [7.04,8.27,9.84,11.12,12.10],        "f": ["Petrol","Diesel","CNG"], "seg": "Hatchback"},
+        "Venue":        {"v": ["E","S","S+","SX","SX+","SX(O)"],                        "p": [7.94,9.53,10.47,12.08,13.12,13.57], "f": ["Petrol","Diesel","CNG"], "seg": "SUV"},
+        "Creta":        {"v": ["E","EX","S","S+","SX","SX(O)"],                         "p": [11.00,12.50,14.25,16.50,18.75,20.15],"f": ["Petrol","Diesel","CNG"],"seg": "SUV"},
+        "Creta Electric":{"v":["Executive","Smart","Smart+","Prime","Prime+","Excellence"],"p":[17.99,18.99,19.89,21.40,22.60,23.50],"f":["EV"],                   "seg": "Electric SUV"},
+        "Alcazar":      {"v": ["Prestige","Prestige(O)","Platinum","Signature","Signature(O)"],"p":[14.99,16.77,18.18,20.17,21.45],"f": ["Petrol","Diesel"],       "seg": "3-Row SUV"},
+        "Tucson":       {"v": ["Platinum","Signature 2WD","Signature AWD"],             "p": [26.93,32.25,34.59],                 "f": ["Petrol","Diesel"],       "seg": "Premium SUV"},
+        "Ioniq 5":      {"v": ["RWD Standard","RWD Long Range","AWD Long Range"],       "p": [44.95,46.95,60.45],                 "f": ["EV"],                    "seg": "Electric SUV"},
     },
-
-    # ── TATA ──────────────────────────────────────────────────────────────────
     "Tata": {
-        "Tiago":        {"variants": ["XE", "XM", "XM+", "XT", "XZ", "XZ+"], "prices": [5.60, 6.20, 6.75, 7.25, 8.10, 8.45], "fuel": ["Petrol", "CNG"], "segment": "Hatchback"},
-        "Tigor":        {"variants": ["XE", "XM", "XT", "XZ", "XZ+"], "prices": [6.30, 7.05, 7.80, 8.70, 9.50], "fuel": ["Petrol", "CNG"], "segment": "Sedan"},
-        "Punch":        {"variants": ["Pure", "Adventure", "Accomplished", "Creative"], "prices": [6.13, 7.49, 8.49, 10.20], "fuel": ["Petrol", "CNG"], "segment": "Micro SUV"},
-        "Punch EV":     {"variants": ["Smart", "Smart+", "Adventure", "Empowered", "Empowered+"], "prices": [10.99, 11.99, 13.49, 14.49, 15.49], "fuel": ["EV"], "segment": "Electric Micro SUV"},
-        "Tiago EV":     {"variants": ["XT", "XZ", "XZ+", "XZ+ Tech LR"], "prices": [8.69, 9.99, 11.49, 12.04], "fuel": ["EV"], "segment": "Electric Hatchback"},
-        "Nexon":        {"variants": ["Smart", "Smart+", "Pure", "Creative", "Fearless", "Fearless+"], "prices": [8.10, 9.30, 10.49, 12.99, 14.29, 15.50], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "SUV"},
-        "Nexon EV":     {"variants": ["Smart", "Smart+", "Creative", "Fearless", "Fearless+"], "prices": [12.49, 13.99, 15.49, 17.49, 19.00], "fuel": ["EV"], "segment": "Electric SUV"},
-        "Curvv":        {"variants": ["Smart", "Smart+", "Accomplished", "Creative", "Accomplished+ S"], "prices": [10.00, 11.19, 12.99, 15.49, 19.00], "fuel": ["Petrol", "Diesel"], "segment": "Coupe SUV"},
-        "Curvv EV":     {"variants": ["Creative", "Fearless", "Fearless+"], "prices": [17.49, 19.99, 21.99], "fuel": ["EV"], "segment": "Electric Coupe SUV"},
-        "Harrier":      {"variants": ["Smart", "Smart+", "Pure", "Creative", "Fearless", "Fearless+"], "prices": [14.99, 16.49, 17.99, 20.99, 23.49, 26.44], "fuel": ["Petrol", "Diesel"], "segment": "Premium SUV"},
-        "Safari":       {"variants": ["Smart+", "Pure+", "Creative", "Fearless", "Fearless+", "Gold"], "prices": [16.19, 18.49, 21.49, 24.49, 26.49, 27.34], "fuel": ["Petrol", "Diesel"], "segment": "3-Row SUV"},
+        "Tiago":        {"v": ["XE","XM","XM+","XT","XZ","XZ+"],                        "p": [5.60,6.20,6.75,7.25,8.10,8.45],     "f": ["Petrol","CNG"],          "seg": "Hatchback"},
+        "Punch":        {"v": ["Pure","Adventure","Accomplished","Creative"],            "p": [6.13,7.49,8.49,10.20],              "f": ["Petrol","CNG"],          "seg": "Micro SUV"},
+        "Tiago EV":     {"v": ["XT","XZ","XZ+","XZ+ Tech LR"],                          "p": [8.69,9.99,11.49,12.04],             "f": ["EV"],                    "seg": "Electric Hatchback"},
+        "Punch EV":     {"v": ["Smart","Smart+","Adventure","Empowered","Empowered+"],  "p": [10.99,11.99,13.49,14.49,15.49],     "f": ["EV"],                    "seg": "Electric Micro SUV"},
+        "Nexon":        {"v": ["Smart","Smart+","Pure","Creative","Fearless","Fearless+"],"p":[8.10,9.30,10.49,12.99,14.29,15.50],"f": ["Petrol","Diesel","CNG"], "seg": "SUV"},
+        "Nexon EV":     {"v": ["Smart","Smart+","Creative","Fearless","Fearless+"],     "p": [12.49,13.99,15.49,17.49,19.00],     "f": ["EV"],                    "seg": "Electric SUV"},
+        "Curvv":        {"v": ["Smart","Smart+","Accomplished","Creative","Accomplished+ S"],"p":[10.00,11.19,12.99,15.49,19.00], "f": ["Petrol","Diesel"],       "seg": "Coupe SUV"},
+        "Curvv EV":     {"v": ["Creative","Fearless","Fearless+"],                      "p": [17.49,19.99,21.99],                 "f": ["EV"],                    "seg": "Electric Coupe SUV"},
+        "Harrier":      {"v": ["Smart","Smart+","Pure","Creative","Fearless","Fearless+"],"p":[14.99,16.49,17.99,20.99,23.49,26.44],"f":["Petrol","Diesel"],      "seg": "Premium SUV"},
+        "Safari":       {"v": ["Smart+","Pure+","Creative","Fearless","Fearless+","Gold"],"p":[16.19,18.49,21.49,24.49,26.49,27.34],"f":["Petrol","Diesel"],      "seg": "3-Row SUV"},
     },
-
-    # ── MAHINDRA ──────────────────────────────────────────────────────────────
     "Mahindra": {
-        "XUV 3XO":      {"variants": ["MX1", "MX2", "MX2 Pro", "MX3", "MX3 Pro", "AX5 L", "AX7 L"], "prices": [7.99, 9.48, 10.34, 11.54, 12.49, 14.98, 15.49], "fuel": ["Petrol", "Diesel"], "segment": "SUV"},
-        "Bolero":       {"variants": ["B4", "B6", "B6 Opt", "B8", "B9"], "prices": [9.80, 10.18, 10.54, 10.72, 10.98], "fuel": ["Diesel"], "segment": "SUV"},
-        "Thar":         {"variants": ["AX Std", "AX (O)", "LX Petrol", "LX Diesel"], "prices": [10.99, 13.99, 15.49, 16.49], "fuel": ["Petrol", "Diesel"], "segment": "Off-Road SUV"},
-        "Thar ROXX":    {"variants": ["MX1", "MX3", "AX3 L", "AX5 L", "AX7 L", "AX7 AWD L"], "prices": [12.99, 15.49, 16.99, 18.79, 20.49, 22.49], "fuel": ["Petrol", "Diesel"], "segment": "Off-Road SUV"},
-        "Scorpio N":    {"variants": ["Z2", "Z4", "Z6", "Z8", "Z8 L", "Z8 AWD"], "prices": [13.85, 15.50, 18.29, 21.99, 23.49, 24.54], "fuel": ["Petrol", "Diesel"], "segment": "SUV"},
-        "XUV700":       {"variants": ["MX", "AX3", "AX5", "AX7", "AX7 AWD"], "prices": [13.99, 17.99, 20.99, 24.99, 26.70], "fuel": ["Petrol", "Diesel"], "segment": "Premium SUV"},
-        "BE 6":         {"variants": ["Pack One", "Pack Two", "Pack Three"], "prices": [18.90, 23.90, 26.90], "fuel": ["EV"], "segment": "Electric Coupe SUV"},
-        "XEV 9e":       {"variants": ["Pack One", "Pack Two", "Pack Three"], "prices": [21.90, 26.90, 30.50], "fuel": ["EV"], "segment": "Electric SUV"},
+        "XUV 3XO":      {"v": ["MX1","MX2","MX2 Pro","MX3","MX3 Pro","AX5 L","AX7 L"],"p": [7.99,9.48,10.34,11.54,12.49,14.98,15.49],"f":["Petrol","Diesel"],  "seg": "SUV"},
+        "Thar ROXX":    {"v": ["MX1","MX3","AX3 L","AX5 L","AX7 L","AX7 AWD L"],      "p": [12.99,15.49,16.99,18.79,20.49,22.49],   "f": ["Petrol","Diesel"],   "seg": "Off-Road SUV"},
+        "Scorpio N":    {"v": ["Z2","Z4","Z6","Z8","Z8 L","Z8 AWD"],                   "p": [13.85,15.50,18.29,21.99,23.49,24.54],   "f": ["Petrol","Diesel"],   "seg": "SUV"},
+        "XUV700":       {"v": ["MX","AX3","AX5","AX7","AX7 AWD"],                      "p": [13.99,17.99,20.99,24.99,26.70],          "f": ["Petrol","Diesel"],   "seg": "Premium SUV"},
+        "BE 6":         {"v": ["Pack One","Pack Two","Pack Three"],                     "p": [18.90,23.90,26.90],                      "f": ["EV"],                "seg": "Electric Coupe SUV"},
+        "XEV 9e":       {"v": ["Pack One","Pack Two","Pack Three"],                     "p": [21.90,26.90,30.50],                      "f": ["EV"],                "seg": "Electric SUV"},
     },
-
-    # ── KIA ───────────────────────────────────────────────────────────────────
     "Kia": {
-        "Sonet":        {"variants": ["HTE", "HTK", "HTK+", "HTX", "HTX+", "GTX+"], "prices": [7.99, 9.89, 11.75, 13.19, 15.09, 15.89], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "SUV"},
-        "Seltos":       {"variants": ["HTK", "HTK+", "HTX", "HTX+", "GTX", "GTX+", "X-Line"], "prices": [10.90, 13.45, 15.45, 17.29, 18.89, 20.65, 21.45], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "SUV"},
-        "Carens":       {"variants": ["Premium", "Premium+", "Luxury", "Luxury+", "X-Line"], "prices": [10.45, 12.59, 14.67, 17.49, 18.20], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "MPV"},
-        "EV6":          {"variants": ["RWD Standard", "RWD Long Range", "GT-Line AWD"], "prices": [60.97, 63.97, 65.97], "fuel": ["EV"], "segment": "Electric Sedan SUV"},
-        "EV9":          {"variants": ["GT-Line", "GT-Line AWD"], "prices": [1.29 * 100, 1.39 * 100], "fuel": ["EV"], "segment": "Electric 3-Row SUV"},
+        "Sonet":        {"v": ["HTE","HTK","HTK+","HTX","HTX+","GTX+"],                 "p": [7.99,9.89,11.75,13.19,15.09,15.89],  "f": ["Petrol","Diesel","CNG"],"seg": "SUV"},
+        "Seltos":       {"v": ["HTK","HTK+","HTX","HTX+","GTX","GTX+","X-Line"],        "p": [10.90,13.45,15.45,17.29,18.89,20.65,21.45],"f":["Petrol","Diesel","CNG"],"seg":"SUV"},
+        "Carens":       {"v": ["Premium","Premium+","Luxury","Luxury+","X-Line"],       "p": [10.45,12.59,14.67,17.49,18.20],      "f": ["Petrol","Diesel","CNG"],"seg": "MPV"},
+        "EV6":          {"v": ["RWD Standard","RWD Long Range","GT-Line AWD"],          "p": [60.97,63.97,65.97],                  "f": ["EV"],                   "seg": "Electric GT"},
     },
-
-    # ── TOYOTA ────────────────────────────────────────────────────────────────
     "Toyota": {
-        "Glanza":       {"variants": ["E", "S", "G", "V"], "prices": [6.73, 7.59, 8.47, 10.03], "fuel": ["Petrol", "CNG"], "segment": "Hatchback"},
-        "Urban Cruiser Hyryder": {"variants": ["E", "S", "G", "V Hybrid", "V Hybrid AWD"], "prices": [10.73, 12.62, 14.64, 17.99, 19.44], "fuel": ["Petrol", "Hybrid"], "segment": "SUV"},
-        "Innova Hycross":{"variants": ["G", "V", "VX", "ZX", "ZX(O)"], "prices": [19.77, 23.00, 26.50, 30.05, 30.60], "fuel": ["Petrol", "Hybrid"], "segment": "Premium MPV"},
-        "Fortuner":     {"variants": ["4x2 MT", "4x2 AT", "Legender 4x2", "Legender 4x4"], "prices": [33.43, 37.99, 44.43, 50.31], "fuel": ["Petrol", "Diesel"], "segment": "Premium SUV"},
-        "Camry Hybrid": {"variants": ["Hybrid"], "prices": [48.08], "fuel": ["Hybrid"], "segment": "Premium Sedan"},
-        "Land Cruiser": {"variants": ["LC300 GX-R"], "prices": [235.00], "fuel": ["Diesel"], "segment": "Luxury SUV"},
+        "Glanza":       {"v": ["E","S","G","V"],                                        "p": [6.73,7.59,8.47,10.03],    "f": ["Petrol","CNG"],   "seg": "Hatchback"},
+        "Hyryder":      {"v": ["E","S","G","V Hybrid","V Hybrid AWD"],                  "p": [10.73,12.62,14.64,17.99,19.44],"f":["Petrol","Hybrid"],"seg": "SUV"},
+        "Innova Hycross":{"v":["G","V","VX","ZX","ZX(O)"],                              "p": [19.77,23.00,26.50,30.05,30.60],"f":["Petrol","Hybrid"],"seg": "Premium MPV"},
+        "Fortuner":     {"v": ["4x2 MT","4x2 AT","Legender 4x2","Legender 4x4"],       "p": [33.43,37.99,44.43,50.31], "f": ["Petrol","Diesel"],"seg": "Premium SUV"},
+        "Camry Hybrid": {"v": ["Hybrid"],                                               "p": [48.08],                   "f": ["Hybrid"],         "seg": "Executive Sedan"},
     },
-
-    # ── HONDA ─────────────────────────────────────────────────────────────────
     "Honda": {
-        "Amaze":        {"variants": ["S MT", "S CVT", "V MT", "V CVT", "VX MT", "VX CVT"], "prices": [7.21, 8.04, 9.03, 9.88, 10.07, 11.08], "fuel": ["Petrol", "Diesel", "CNG"], "segment": "Sedan"},
-        "Elevate":      {"variants": ["V MT", "V CVT", "SV MT", "SV CVT", "ZX CVT", "ZX MT"], "prices": [11.69, 13.77, 14.05, 15.15, 15.96, 16.19], "fuel": ["Petrol"], "segment": "SUV"},
-        "City":         {"variants": ["V MT", "V CVT", "ZX MT", "ZX CVT"], "prices": [11.73, 13.55, 15.09, 15.97], "fuel": ["Petrol"], "segment": "Sedan"},
-        "City e:HEV":   {"variants": ["ZX Hybrid"], "prices": [19.59], "fuel": ["Hybrid"], "segment": "Hybrid Sedan"},
+        "Amaze":        {"v": ["S MT","S CVT","V MT","V CVT","VX CVT"],                "p": [7.21,8.04,9.03,9.88,11.08],  "f": ["Petrol","Diesel","CNG"],"seg": "Sedan"},
+        "Elevate":      {"v": ["V MT","V CVT","SV CVT","ZX CVT","ZX MT"],              "p": [11.69,13.77,15.15,15.96,16.19],"f":["Petrol"],           "seg": "SUV"},
+        "City":         {"v": ["V MT","V CVT","ZX MT","ZX CVT"],                       "p": [11.73,13.55,15.09,15.97],   "f": ["Petrol"],            "seg": "Sedan"},
+        "City e:HEV":   {"v": ["ZX Hybrid"],                                           "p": [19.59],                     "f": ["Hybrid"],            "seg": "Hybrid Sedan"},
     },
-
-    # ── VOLKSWAGEN ────────────────────────────────────────────────────────────
     "Volkswagen": {
-        "Taigun":       {"variants": ["Comfortline", "Highline", "Topline", "GT Plus Sport"], "prices": [11.69, 14.53, 17.17, 20.43], "fuel": ["Petrol"], "segment": "SUV"},
-        "Virtus":       {"variants": ["Comfortline", "Highline", "Topline", "GT Plus"], "prices": [11.56, 14.12, 16.78, 19.41], "fuel": ["Petrol"], "segment": "Sedan"},
-        "Tiguan":       {"variants": ["Elegance", "R-Line"], "prices": [35.17, 48.97], "fuel": ["Petrol"], "segment": "Premium SUV"},
+        "Taigun":       {"v": ["Comfortline","Highline","Topline","GT Plus Sport"],     "p": [11.69,14.53,17.17,20.43],   "f": ["Petrol"],  "seg": "SUV"},
+        "Virtus":       {"v": ["Comfortline","Highline","Topline","GT Plus"],           "p": [11.56,14.12,16.78,19.41],   "f": ["Petrol"],  "seg": "Sedan"},
+        "Tiguan":       {"v": ["Elegance","R-Line"],                                   "p": [35.17,48.97],               "f": ["Petrol"],  "seg": "Premium SUV"},
     },
-
-    # ── SKODA ─────────────────────────────────────────────────────────────────
     "Skoda": {
-        "Kushaq":       {"variants": ["Active", "Ambition", "Style", "Monte Carlo"], "prices": [11.09, 14.39, 17.49, 19.49], "fuel": ["Petrol"], "segment": "SUV"},
-        "Slavia":       {"variants": ["Active", "Ambition", "Style", "Monte Carlo"], "prices": [10.69, 14.19, 17.09, 18.49], "fuel": ["Petrol"], "segment": "Sedan"},
-        "Kodiaq":       {"variants": ["Style 4x2", "Sportline 4x2"], "prices": [46.89, 48.89], "fuel": ["Petrol"], "segment": "Premium SUV"},
-        "Superb":       {"variants": ["Laurin & Klement"], "prices": [54.49], "fuel": ["Petrol"], "segment": "Premium Sedan"},
+        "Kushaq":       {"v": ["Active","Ambition","Style","Monte Carlo"],              "p": [11.09,14.39,17.49,19.49],   "f": ["Petrol"],  "seg": "SUV"},
+        "Slavia":       {"v": ["Active","Ambition","Style","Monte Carlo"],              "p": [10.69,14.19,17.09,18.49],   "f": ["Petrol"],  "seg": "Sedan"},
+        "Kodiaq":       {"v": ["Style 4x2","Sportline 4x2"],                           "p": [46.89,48.89],               "f": ["Petrol"],  "seg": "Premium SUV"},
+        "Superb":       {"v": ["Laurin & Klement"],                                    "p": [54.49],                     "f": ["Petrol"],  "seg": "Premium Sedan"},
     },
-
-    # ── MG ────────────────────────────────────────────────────────────────────
     "MG": {
-        "Hector":       {"variants": ["Style", "Super", "Smart Pro", "Select Pro", "Savvy Pro"], "prices": [13.99, 16.30, 18.20, 20.50, 21.99], "fuel": ["Petrol", "CNG", "Diesel"], "segment": "SUV"},
-        "Windsor EV":   {"variants": ["Excite", "Essence", "Exclusive"], "prices": [13.50, 14.50, 15.50], "fuel": ["EV"], "segment": "Electric SUV"},
-        "ZS EV":        {"variants": ["Excite Pro", "Essence Pro"], "prices": [18.98, 25.88], "fuel": ["EV"], "segment": "Electric SUV"},
-        "Gloster":      {"variants": ["Super 2WD", "Sharp 2WD", "Savvy 2WD", "Savvy AWD"], "prices": [37.80, 40.50, 44.00, 45.00], "fuel": ["Diesel"], "segment": "Premium SUV"},
+        "Hector":       {"v": ["Style","Super","Smart Pro","Select Pro","Savvy Pro"],   "p": [13.99,16.30,18.20,20.50,21.99],"f":["Petrol","CNG","Diesel"],"seg":"SUV"},
+        "Windsor EV":   {"v": ["Excite","Essence","Exclusive"],                        "p": [13.50,14.50,15.50],          "f": ["EV"],  "seg": "Electric SUV"},
+        "ZS EV":        {"v": ["Excite Pro","Essence Pro"],                            "p": [18.98,25.88],                "f": ["EV"],  "seg": "Electric SUV"},
+        "Gloster":      {"v": ["Super 2WD","Sharp 2WD","Savvy 2WD","Savvy AWD"],       "p": [37.80,40.50,44.00,45.00],    "f": ["Diesel"],"seg": "Premium SUV"},
     },
-
-    # ── JEEP ──────────────────────────────────────────────────────────────────
     "Jeep": {
-        "Compass":      {"variants": ["Sport", "Longitude", "Longitude+", "Trailhawk", "Model S 4x4"], "prices": [20.49, 22.99, 25.49, 28.29, 30.39], "fuel": ["Petrol", "Diesel"], "segment": "Premium SUV"},
-        "Meridian":     {"variants": ["Longitude 2WD", "Limited 4WD", "Overland 4WD"], "prices": [29.90, 33.50, 37.00], "fuel": ["Diesel"], "segment": "Premium 3-Row SUV"},
-        "Wrangler":     {"variants": ["Unlimited Sport", "Unlimited Sahara", "Unlimited Rubicon"], "prices": [56.95, 62.45, 67.65], "fuel": ["Petrol"], "segment": "Off-Road SUV"},
+        "Compass":      {"v": ["Sport","Longitude","Longitude+","Trailhawk","Model S 4x4"],"p":[20.49,22.99,25.49,28.29,30.39],"f":["Petrol","Diesel"],"seg":"Premium SUV"},
+        "Meridian":     {"v": ["Longitude 2WD","Limited 4WD","Overland 4WD"],          "p": [29.90,33.50,37.00],  "f": ["Diesel"],  "seg": "Premium 3-Row SUV"},
+        "Wrangler":     {"v": ["Unlimited Sport","Unlimited Sahara","Unlimited Rubicon"],"p":[56.95,62.45,67.65],"f": ["Petrol"],   "seg": "Off-Road Icon"},
     },
-
-    # ── BMW ───────────────────────────────────────────────────────────────────
     "BMW": {
-        "3 Series":     {"variants": ["320i Sport", "330i M Sport", "M340i"], "prices": [46.90, 57.90, 72.90], "fuel": ["Petrol"], "segment": "Luxury Sedan"},
-        "5 Series":     {"variants": ["520i Luxury", "530i M Sport", "540i M Sport"], "prices": [67.90, 72.90, 81.90], "fuel": ["Petrol"], "segment": "Luxury Sedan"},
-        "7 Series":     {"variants": ["740i Luxury", "740Ld Luxury", "760i xDrive"], "prices": [1.72 * 100, 1.95 * 100, 2.53 * 100], "fuel": ["Petrol", "Diesel"], "segment": "Ultra Luxury Sedan"},
-        "X1":           {"variants": ["sDrive18i xLine", "sDrive18i M Sport"], "prices": [46.50, 56.90], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "X3":           {"variants": ["xDrive20i Luxury", "xDrive20d Luxury", "xDrive30i M Sport"], "prices": [69.90, 73.90, 90.90], "fuel": ["Petrol", "Diesel"], "segment": "Luxury SUV"},
-        "X5":           {"variants": ["xDrive40i M Sport", "xDrive40d M Sport"], "prices": [93.90, 98.90], "fuel": ["Petrol", "Diesel"], "segment": "Luxury SUV"},
-        "iX":           {"variants": ["iX xDrive40", "iX xDrive50 Sport"], "prices": [1.21 * 100, 1.40 * 100], "fuel": ["EV"], "segment": "Electric Luxury SUV"},
-        "M3 Competition":{"variants": ["Competition Sedan"], "prices": [1.47 * 100], "fuel": ["Petrol"], "segment": "Performance Sedan"},
+        "3 Series":      {"v": ["320i Sport","330i M Sport","M340i"],                  "p": [46.90,57.90,72.90],   "f": ["Petrol"],         "seg": "Luxury Sedan"},
+        "5 Series":      {"v": ["520i Luxury","530i M Sport","M550i xDrive"],          "p": [67.90,72.90,1.05*100],"f": ["Petrol"],         "seg": "Executive Sedan"},
+        "7 Series":      {"v": ["740i Luxury","740Ld Luxury","760i xDrive"],           "p": [1.72*100,1.95*100,2.53*100],"f":["Petrol","Diesel"],"seg": "Ultra Luxury Sedan"},
+        "X1":            {"v": ["sDrive18i xLine","sDrive18i M Sport"],                "p": [46.50,56.90],         "f": ["Petrol"],         "seg": "Luxury SUV"},
+        "X3":            {"v": ["xDrive20i Luxury","xDrive20d Luxury","xDrive30i M Sport"],"p":[69.90,73.90,90.90],"f":["Petrol","Diesel"],"seg": "Luxury SUV"},
+        "X5":            {"v": ["xDrive40i M Sport","xDrive40d M Sport"],              "p": [93.90,98.90],         "f": ["Petrol","Diesel"],"seg": "Luxury SUV"},
+        "iX":            {"v": ["iX xDrive40","iX xDrive50 Sport"],                   "p": [1.21*100,1.40*100],   "f": ["EV"],             "seg": "Electric Luxury SUV"},
+        "M3 Competition":{"v": ["Competition Sedan"],                                  "p": [1.47*100],            "f": ["Petrol"],         "seg": "Performance Sedan"},
     },
-
-    # ── MERCEDES-BENZ ─────────────────────────────────────────────────────────
     "Mercedes-Benz": {
-        "A-Class":      {"variants": ["A 200 Progressive", "A 220 4MATIC AMG"], "prices": [45.50, 53.00], "fuel": ["Petrol"], "segment": "Luxury Hatchback"},
-        "C-Class":      {"variants": ["C 200 Progressive", "C 220d Progressive", "C 300d AMG"], "prices": [57.00, 62.00, 68.00], "fuel": ["Petrol", "Diesel"], "segment": "Luxury Sedan"},
-        "E-Class":      {"variants": ["E 200", "E 220d", "E 350d 4MATIC AMG"], "prices": [78.50, 84.50, 95.00], "fuel": ["Petrol", "Diesel"], "segment": "Luxury Sedan"},
-        "S-Class":      {"variants": ["S 450d Exclusive", "S 500 Exclusive", "Maybach S 680"], "prices": [1.69 * 100, 2.20 * 100, 3.50 * 100], "fuel": ["Petrol", "Diesel"], "segment": "Ultra Luxury Sedan"},
-        "GLA":          {"variants": ["GLA 200 Progressive", "GLA 220d 4MATIC AMG"], "prices": [49.90, 56.50], "fuel": ["Petrol", "Diesel"], "segment": "Luxury SUV"},
-        "GLC":          {"variants": ["GLC 220d 4MATIC", "GLC 300d 4MATIC AMG"], "prices": [68.00, 80.00], "fuel": ["Diesel"], "segment": "Luxury SUV"},
-        "GLE":          {"variants": ["GLE 300d 4MATIC", "GLE 450 4MATIC", "AMG GLE 53"], "prices": [97.00, 1.10 * 100, 1.50 * 100], "fuel": ["Petrol", "Diesel"], "segment": "Luxury SUV"},
-        "EQS":          {"variants": ["EQS 450+", "AMG EQS 53 4MATIC+"], "prices": [1.55 * 100, 2.45 * 100], "fuel": ["EV"], "segment": "Electric Luxury Sedan"},
+        "A-Class":       {"v": ["A 200 Progressive","A 220 4MATIC AMG"],               "p": [45.50,53.00],         "f": ["Petrol"],  "seg": "Luxury Hatchback"},
+        "C-Class":       {"v": ["C 200 Progressive","C 220d Progressive","C 300d AMG"],"p": [57.00,62.00,68.00],  "f": ["Petrol","Diesel"],"seg": "Luxury Sedan"},
+        "E-Class":       {"v": ["E 200","E 220d","E 350d 4MATIC AMG"],                 "p": [78.50,84.50,95.00],  "f": ["Petrol","Diesel"],"seg": "Executive Sedan"},
+        "S-Class":       {"v": ["S 450d Exclusive","S 500 Exclusive","Maybach S 680"],"p": [1.69*100,2.20*100,3.50*100],"f":["Petrol","Diesel"],"seg":"Ultra Luxury Sedan"},
+        "GLA":           {"v": ["GLA 200 Progressive","GLA 220d 4MATIC AMG"],         "p": [49.90,56.50],         "f": ["Petrol","Diesel"],"seg": "Luxury SUV"},
+        "GLC":           {"v": ["GLC 220d 4MATIC","GLC 300d 4MATIC AMG"],             "p": [68.00,80.00],         "f": ["Diesel"],  "seg": "Luxury SUV"},
+        "GLE":           {"v": ["GLE 300d 4MATIC","GLE 450 4MATIC","AMG GLE 53"],     "p": [97.00,1.10*100,1.50*100],"f":["Petrol","Diesel"],"seg":"Luxury SUV"},
+        "EQS":           {"v": ["EQS 450+","AMG EQS 53 4MATIC+"],                     "p": [1.55*100,2.45*100],   "f": ["EV"],      "seg": "Electric Luxury Sedan"},
     },
-
-    # ── AUDI ──────────────────────────────────────────────────────────────────
     "Audi": {
-        "A4":           {"variants": ["35 TFSI Premium", "45 TFSI Technology"], "prices": [47.34, 54.65], "fuel": ["Petrol"], "segment": "Luxury Sedan"},
-        "A6":           {"variants": ["45 TFSI Technology", "55 TFSI Technology"], "prices": [63.99, 73.99], "fuel": ["Petrol"], "segment": "Luxury Sedan"},
-        "A8 L":         {"variants": ["55 TFSI", "60 TFSI quattro"], "prices": [1.39 * 100, 1.60 * 100], "fuel": ["Petrol"], "segment": "Ultra Luxury Sedan"},
-        "Q3":           {"variants": ["35 TFSI Premium", "40 TFSI Technology"], "prices": [44.89, 52.89], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "Q5":           {"variants": ["45 TFSI Technology", "55 TFSI quattro"], "prices": [67.97, 84.15], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "Q7":           {"variants": ["45 TFSI Technology", "55 TFSI quattro"], "prices": [91.83, 1.05 * 100], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "e-tron":       {"variants": ["50 quattro Technology", "55 quattro Technology"], "prices": [1.14 * 100, 1.20 * 100], "fuel": ["EV"], "segment": "Electric Luxury SUV"},
+        "A4":            {"v": ["35 TFSI Premium","45 TFSI Technology"],               "p": [47.34,54.65],         "f": ["Petrol"],  "seg": "Luxury Sedan"},
+        "A6":            {"v": ["45 TFSI Technology","55 TFSI Technology"],            "p": [63.99,73.99],         "f": ["Petrol"],  "seg": "Executive Sedan"},
+        "A8 L":          {"v": ["55 TFSI","60 TFSI quattro"],                          "p": [1.39*100,1.60*100],   "f": ["Petrol"],  "seg": "Ultra Luxury Sedan"},
+        "Q3":            {"v": ["35 TFSI Premium","40 TFSI Technology"],               "p": [44.89,52.89],         "f": ["Petrol"],  "seg": "Luxury SUV"},
+        "Q5":            {"v": ["45 TFSI Technology","55 TFSI quattro"],               "p": [67.97,84.15],         "f": ["Petrol"],  "seg": "Luxury SUV"},
+        "Q7":            {"v": ["45 TFSI Technology","55 TFSI quattro"],               "p": [91.83,1.05*100],      "f": ["Petrol"],  "seg": "Luxury SUV"},
+        "e-tron":        {"v": ["50 quattro Technology","55 quattro Technology"],      "p": [1.14*100,1.20*100],   "f": ["EV"],      "seg": "Electric Luxury SUV"},
     },
-
-    # ── PORSCHE ───────────────────────────────────────────────────────────────
     "Porsche": {
-        "Macan":        {"variants": ["Base", "S", "GTS", "Turbo"], "prices": [89.42, 1.04 * 100, 1.14 * 100, 1.38 * 100], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "Cayenne":      {"variants": ["Base", "S", "GTS", "Turbo", "Turbo GT"], "prices": [1.29 * 100, 1.47 * 100, 1.93 * 100, 2.31 * 100, 2.98 * 100], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "Panamera":     {"variants": ["4 E-Hybrid", "4S", "GTS", "Turbo S E-Hybrid"], "prices": [1.99 * 100, 2.21 * 100, 2.62 * 100, 3.38 * 100], "fuel": ["Hybrid", "Petrol"], "segment": "Luxury Sedan"},
-        "911":          {"variants": ["Carrera", "Carrera S", "Targa 4", "GT3", "Turbo S"], "prices": [2.21 * 100, 2.64 * 100, 2.95 * 100, 3.79 * 100, 4.39 * 100], "fuel": ["Petrol"], "segment": "Sports Car"},
-        "Taycan":       {"variants": ["RWD", "4S", "GTS", "Turbo", "Turbo S"], "prices": [1.87 * 100, 2.09 * 100, 2.30 * 100, 2.74 * 100, 3.14 * 100], "fuel": ["EV"], "segment": "Electric Luxury Sedan"},
+        "Macan":         {"v": ["Base","S","GTS","Turbo"],                             "p": [89.42,1.04*100,1.14*100,1.38*100],"f":["Petrol"],"seg":"Luxury SUV"},
+        "Cayenne":       {"v": ["Base","S","GTS","Turbo","Turbo GT"],                  "p": [1.29*100,1.47*100,1.93*100,2.31*100,2.98*100],"f":["Petrol"],"seg":"Luxury SUV"},
+        "Panamera":      {"v": ["4 E-Hybrid","4S","GTS","Turbo S E-Hybrid"],           "p": [1.99*100,2.21*100,2.62*100,3.38*100],"f":["Hybrid","Petrol"],"seg":"Luxury Sedan"},
+        "911":           {"v": ["Carrera","Carrera S","Targa 4","GT3","Turbo S"],      "p": [2.21*100,2.64*100,2.95*100,3.79*100,4.39*100],"f":["Petrol"],"seg":"Sports Car"},
+        "Taycan":        {"v": ["RWD","4S","GTS","Turbo","Turbo S"],                   "p": [1.87*100,2.09*100,2.30*100,2.74*100,3.14*100],"f":["EV"],"seg":"Electric Luxury Sedan"},
     },
-
-    # ── LAND ROVER ────────────────────────────────────────────────────────────
     "Land Rover": {
-        "Defender":     {"variants": ["90 S", "110 S", "110 HSE", "110 X", "130 HSE"], "prices": [1.07 * 100, 1.19 * 100, 1.50 * 100, 1.98 * 100, 2.35 * 100], "fuel": ["Diesel", "Petrol"], "segment": "Luxury Off-Road"},
-        "Discovery":    {"variants": ["S", "HSE", "HSE Luxury"], "prices": [98.30, 1.15 * 100, 1.45 * 100], "fuel": ["Diesel"], "segment": "Luxury SUV"},
-        "Range Rover Sport": {"variants": ["Dynamic SE", "HSE Dynamic", "Autobiography"], "prices": [1.63 * 100, 1.93 * 100, 2.19 * 100], "fuel": ["Petrol", "Diesel"], "segment": "Luxury SUV"},
-        "Range Rover":  {"variants": ["SE LWB", "HSE LWB", "Autobiography LWB", "SV LWB"], "prices": [2.39 * 100, 2.90 * 100, 3.65 * 100, 4.65 * 100], "fuel": ["Petrol", "Diesel"], "segment": "Ultra Luxury SUV"},
+        "Defender":      {"v": ["90 S","110 S","110 HSE","110 X","130 HSE"],           "p": [1.07*100,1.19*100,1.50*100,1.98*100,2.35*100],"f":["Diesel","Petrol"],"seg":"Luxury Off-Road"},
+        "Discovery":     {"v": ["S","HSE","HSE Luxury"],                               "p": [98.30,1.15*100,1.45*100],"f":["Diesel"],"seg": "Luxury SUV"},
+        "Range Rover Sport":{"v":["Dynamic SE","HSE Dynamic","Autobiography"],         "p": [1.63*100,1.93*100,2.19*100],"f":["Petrol","Diesel"],"seg":"Luxury SUV"},
+        "Range Rover":   {"v": ["SE LWB","HSE LWB","Autobiography LWB","SV LWB"],     "p": [2.39*100,2.90*100,3.65*100,4.65*100],"f":["Petrol","Diesel"],"seg":"Ultra Luxury SUV"},
     },
-
-    # ── VOLVO ─────────────────────────────────────────────────────────────────
     "Volvo": {
-        "XC40":         {"variants": ["B4 Plus Dark", "B4 Plus", "B4 Ultimate"], "prices": [57.90, 62.90, 67.90], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "XC60":         {"variants": ["B5 Plus Dark", "B5 Plus", "B6 Ultimate"], "prices": [68.90, 73.90, 83.90], "fuel": ["Petrol"], "segment": "Luxury SUV"},
-        "XC90":         {"variants": ["B6 Plus Dark", "B6 Plus 7S", "Ultimate 7S"], "prices": [1.03 * 100, 1.07 * 100, 1.15 * 100], "fuel": ["Petrol"], "segment": "Luxury 3-Row SUV"},
-        "EX40":         {"variants": ["Single Motor", "Twin Motor"], "prices": [55.90, 63.90], "fuel": ["EV"], "segment": "Electric Luxury SUV"},
+        "XC40":          {"v": ["B4 Plus Dark","B4 Plus","B4 Ultimate"],               "p": [57.90,62.90,67.90],   "f": ["Petrol"],  "seg": "Luxury SUV"},
+        "XC60":          {"v": ["B5 Plus Dark","B5 Plus","B6 Ultimate"],               "p": [68.90,73.90,83.90],   "f": ["Petrol"],  "seg": "Luxury SUV"},
+        "XC90":          {"v": ["B6 Plus Dark","B6 Plus 7S","Ultimate 7S"],            "p": [1.03*100,1.07*100,1.15*100],"f":["Petrol"],"seg":"Luxury 3-Row SUV"},
+        "EX40":          {"v": ["Single Motor","Twin Motor"],                          "p": [55.90,63.90],         "f": ["EV"],      "seg": "Electric Luxury SUV"},
     },
-
-    # ── BYD ───────────────────────────────────────────────────────────────────
     "BYD": {
-        "Atto 3":       {"variants": ["Standard", "Extended Range"], "prices": [33.99, 37.99], "fuel": ["EV"], "segment": "Electric SUV"},
-        "Seal":         {"variants": ["Excellence RWD", "Performance AWD"], "prices": [41.00, 53.00], "fuel": ["EV"], "segment": "Electric Sedan"},
-        "eMAX 7":       {"variants": ["7-Seater"], "prices": [26.90], "fuel": ["EV"], "segment": "Electric MPV"},
+        "Atto 3":        {"v": ["Standard","Extended Range"],                          "p": [33.99,37.99],         "f": ["EV"],  "seg": "Electric SUV"},
+        "Seal":          {"v": ["Excellence RWD","Performance AWD"],                   "p": [41.00,53.00],         "f": ["EV"],  "seg": "Electric Sedan"},
+        "eMAX 7":        {"v": ["7-Seater"],                                           "p": [26.90],               "f": ["EV"],  "seg": "Electric MPV"},
     },
-
-    # ── RENAULT ───────────────────────────────────────────────────────────────
     "Renault": {
-        "Kiger":        {"variants": ["RXE", "RXL", "RXT", "RXT(O)", "RXZ", "RXZ Turbo"], "prices": [5.99, 7.49, 8.55, 9.55, 10.50, 11.23], "fuel": ["Petrol"], "segment": "SUV"},
-        "Triber":       {"variants": ["RXE", "RXL", "RXT", "RXZ", "RXZ AMT"], "prices": [6.00, 6.99, 7.82, 8.65, 8.97], "fuel": ["Petrol", "CNG"], "segment": "MPV"},
+        "Kiger":         {"v": ["RXE","RXL","RXT","RXT(O)","RXZ","RXZ Turbo"],        "p": [5.99,7.49,8.55,9.55,10.50,11.23],"f":["Petrol"],"seg": "SUV"},
+        "Triber":        {"v": ["RXE","RXL","RXT","RXZ","RXZ AMT"],                   "p": [6.00,6.99,7.82,8.65,8.97],"f":["Petrol","CNG"],"seg": "MPV"},
     },
-
-    # ── NISSAN ────────────────────────────────────────────────────────────────
     "Nissan": {
-        "Magnite":      {"variants": ["XE", "XL", "XV", "XV Premium", "XV Premium(O)", "Turbo XV Premium(O)"], "prices": [5.99, 7.09, 8.69, 9.99, 10.99, 11.39], "fuel": ["Petrol"], "segment": "SUV"},
+        "Magnite":       {"v": ["XE","XL","XV","XV Premium","XV Premium(O)","Turbo XV Premium(O)"],"p":[5.99,7.09,8.69,9.99,10.99,11.39],"f":["Petrol"],"seg":"SUV"},
     },
-
-    # ── CITROEN ───────────────────────────────────────────────────────────────
     "Citroen": {
-        "C3":           {"variants": ["Live", "Feel", "Feel+", "Shine"], "prices": [6.16, 7.59, 8.42, 9.19], "fuel": ["Petrol"], "segment": "Hatchback"},
-        "C3 Aircross":  {"variants": ["Feel", "Feel+ MT", "Feel+ AT", "Shine AT"], "prices": [9.99, 11.68, 13.32, 14.49], "fuel": ["Petrol"], "segment": "SUV"},
-        "eC3":          {"variants": ["Feel", "Shine"], "prices": [11.50, 12.90], "fuel": ["EV"], "segment": "Electric Hatchback"},
+        "C3":            {"v": ["Live","Feel","Feel+","Shine"],                        "p": [6.16,7.59,8.42,9.19],  "f": ["Petrol"],  "seg": "Hatchback"},
+        "C3 Aircross":   {"v": ["Feel","Feel+ MT","Feel+ AT","Shine AT"],              "p": [9.99,11.68,13.32,14.49],"f":["Petrol"],  "seg": "SUV"},
+        "eC3":           {"v": ["Feel","Shine"],                                       "p": [11.50,12.90],          "f": ["EV"],      "seg": "Electric Hatchback"},
     },
 }
 
-# 20 Best Indian Cities
 CITIES = [
-    "Mumbai", "Delhi", "Bengaluru", "Chennai", "Hyderabad",
-    "Pune", "Kolkata", "Ahmedabad", "Jaipur", "Surat",
-    "Lucknow", "Chandigarh", "Kochi", "Coimbatore", "Nagpur",
-    "Indore", "Bhopal", "Visakhapatnam", "Noida", "Gurugram"
+    "Mumbai","Delhi","Bengaluru","Chennai","Hyderabad",
+    "Pune","Kolkata","Ahmedabad","Jaipur","Surat",
+    "Lucknow","Chandigarh","Kochi","Coimbatore","Nagpur",
+    "Indore","Bhopal","Visakhapatnam","Noida","Gurugram"
 ]
 
-BRAND_SEGMENTS = {
-    "Maruti Suzuki": "Volume",  "Hyundai": "Volume",    "Tata": "Volume",
-    "Mahindra": "Volume",       "Kia": "Volume",         "Toyota": "Volume",
-    "Honda": "Volume",          "Volkswagen": "Volume",  "Skoda": "Volume",
-    "MG": "Volume",             "Jeep": "Upper",         "Renault": "Volume",
-    "Nissan": "Volume",         "Citroen": "Volume",     "BYD": "Upper",
-    "BMW": "Luxury",            "Mercedes-Benz": "Luxury", "Audi": "Luxury",
-    "Porsche": "Ultra Luxury",  "Land Rover": "Ultra Luxury", "Volvo": "Luxury",
+BRAND_TIER = {
+    "Maruti Suzuki":"Volume","Hyundai":"Volume","Tata":"Volume","Mahindra":"Volume",
+    "Kia":"Volume","Toyota":"Volume","Honda":"Volume","Volkswagen":"Volume",
+    "Skoda":"Volume","MG":"Volume","Renault":"Volume","Nissan":"Volume","Citroen":"Volume",
+    "Jeep":"Upper","BYD":"Upper",
+    "BMW":"Luxury","Mercedes-Benz":"Luxury","Audi":"Luxury","Volvo":"Luxury",
+    "Porsche":"Ultra Luxury","Land Rover":"Ultra Luxury",
 }
 
+FUEL_ICONS = {"Petrol":"⛽","Diesel":"🛢️","CNG":"🌿","EV":"⚡","Hybrid":"🔋"}
+
 # ═══════════════════════════════════════════════════════════════════════════════
-# PAGE UI
+# PAGE LAYOUT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── Breadcrumb ────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="av-breadcrumb">
+    <span>AUTOVAULT AI</span>
+    <span class="sep">/</span>
+    <span class="active">01 · VEHICLE INPUT</span>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Page header ───────────────────────────────────────────────────────────────
+col_head, col_tip = st.columns([3, 1])
+with col_head:
+    st.markdown("""
+    <h1>Configure Vehicle</h1>
+    <p style="color:var(--c-text-muted);font-size:0.9rem;margin-top:4px;">
+    Fill in each section below. Your analysis updates live as you select.
+    All prices are 2025 ex-showroom (India).
+    </p>
+    """, unsafe_allow_html=True)
+with col_tip:
+    st.info("💡 **Tip:** Select a variant — the exact price fills automatically. Override with your on-road quote in the Finance section.")
+
+st.markdown("<hr/>", unsafe_allow_html=True)
+
+# ── Step indicator ────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="step-bar">
+    <div class="step-item active">
+        <span class="step-num">1</span> VEHICLE SELECTION
+    </div>
+    <div class="step-item">
+        <span class="step-num">2</span> USAGE & HISTORY
+    </div>
+    <div class="step-item">
+        <span class="step-num">3</span> FUEL TYPE
+    </div>
+    <div class="step-item">
+        <span class="step-num">4</span> FINANCING
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 1 — VEHICLE SELECTION
 # ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
-<div style="margin-bottom:6px;">
-    <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;
-    color:#FF2800;font-family:'IBM Plex Mono',monospace;">01 — Vehicle Intelligence</span>
+<div class="av-panel-head" style="margin-bottom:16px;">
+    <div class="av-panel-icon red">🚗</div>
+    <div>
+        <div class="av-panel-title">STEP 01</div>
+        <div class="av-panel-subtitle">Vehicle Selection</div>
+    </div>
 </div>
-<h1 style="font-size:2.4rem;font-weight:900;letter-spacing:0.05em;margin-bottom:0;line-height:1;">
-    CONFIGURE VEHICLE
-</h1>
-<hr style="border:none;border-top:3px solid #1A1A1A;margin:14px 0 24px 0;"/>
 """, unsafe_allow_html=True)
 
-# ── TABS for brand category ────────────────────────────────────────────────────
-tab_vol, tab_upper, tab_lux, tab_ultra = st.tabs(["VOLUME BRANDS", "UPPER SEGMENT", "LUXURY", "ULTRA LUXURY"])
-
-with tab_vol:
-    vol_brands = [b for b, s in BRAND_SEGMENTS.items() if s == "Volume"]
-    brand_sel_vol = st.selectbox("SELECT BRAND", vol_brands, key="vol_brand")
-    selected_brand = brand_sel_vol
-
-with tab_upper:
-    upper_brands = [b for b, s in BRAND_SEGMENTS.items() if s == "Upper"]
-    brand_sel_up = st.selectbox("SELECT BRAND", upper_brands, key="up_brand")
-    selected_brand = brand_sel_up
-
-with tab_lux:
-    lux_brands = [b for b, s in BRAND_SEGMENTS.items() if s == "Luxury"]
-    brand_sel_lux = st.selectbox("SELECT BRAND", lux_brands, key="lux_brand")
-    selected_brand = brand_sel_lux
-
-with tab_ultra:
-    ultra_brands = [b for b, s in BRAND_SEGMENTS.items() if s == "Ultra Luxury"]
-    brand_sel_ultra = st.selectbox("SELECT BRAND", ultra_brands, key="ultra_brand")
-    selected_brand = brand_sel_ultra
-
-# Determine active brand from widget values
-active_tab_index = 0  # We'll use session state trick below
-if "active_tab" not in st.session_state:
-    st.session_state.active_tab = "Volume"
-
-# Determine brand from all selectboxes (last changed wins via key priority)
-# Use a combined selector approach
 all_brands = sorted(VEHICLE_DB.keys())
-st.markdown('<div class="section-panel">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">VEHICLE SELECTION</div>', unsafe_allow_html=True)
 
-col_b, col_m, col_v = st.columns(3)
+# Brand tier tabs for navigation
+t1, t2, t3, t4 = st.tabs(["⚡ VOLUME  (₹4L–₹25L)", "🔥 UPPER  (₹20L–₹70L)", "💎 LUXURY  (₹45L–₹1.2Cr)", "👑 ULTRA LUXURY  (₹90L+)"])
 
-with col_b:
-    brand = st.selectbox("BRAND", all_brands, index=all_brands.index("Hyundai"))
+with t1:
+    vb = [b for b,s in BRAND_TIER.items() if s=="Volume"]
+    _bv = st.selectbox("BRAND", vb, key="tab_vol")
+with t2:
+    ub = [b for b,s in BRAND_TIER.items() if s=="Upper"]
+    _bu = st.selectbox("BRAND", ub, key="tab_up")
+with t3:
+    lb = [b for b,s in BRAND_TIER.items() if s=="Luxury"]
+    _bl = st.selectbox("BRAND", lb, key="tab_lux")
+with t4:
+    ulb = [b for b,s in BRAND_TIER.items() if s=="Ultra Luxury"]
+    _bul = st.selectbox("BRAND", ulb, key="tab_ultra")
+
+st.markdown("<hr style='margin:8px 0 20px 0;'/>", unsafe_allow_html=True)
+
+# Master brand picker + model + variant
+c1, c2, c3 = st.columns([1, 1, 1])
+
+with c1:
+    st.markdown("**BRAND** &nbsp;<span class='av-hint'>?</span>", unsafe_allow_html=True)
+    brand = st.selectbox("Brand", all_brands, index=all_brands.index("Hyundai"),
+                         label_visibility="collapsed", help="Select manufacturer")
 
 brand_data = VEHICLE_DB.get(brand, {})
 models = list(brand_data.keys())
 
-with col_m:
-    model = st.selectbox("MODEL", models)
+with c2:
+    st.markdown("**MODEL** &nbsp;<span class='av-hint'>?</span>", unsafe_allow_html=True)
+    model = st.selectbox("Model", models, label_visibility="collapsed",
+                         help="Model selection updates available variants and prices")
 
-model_data = brand_data.get(model, {})
-variants = model_data.get("variants", ["Standard"])
-prices   = model_data.get("prices", [10.0])
-seg      = model_data.get("segment", "")
-fuels    = model_data.get("fuel", ["Petrol"])
+mdata    = brand_data.get(model, {})
+variants = mdata.get("v", ["Standard"])
+prices   = mdata.get("p", [10.0])
+seg      = mdata.get("seg", "")
+fuels    = mdata.get("f", ["Petrol"])
 
-with col_v:
-    variant_options = [f"{v}  ·  ₹{p:.2f}L" for v, p in zip(variants, prices)]
-    variant_sel = st.selectbox("VARIANT + PRICE", variant_options)
-    variant_idx = variant_options.index(variant_sel)
-    variant = variants[variant_idx]
-    auto_price = prices[variant_idx]
+with c3:
+    st.markdown("**VARIANT &amp; PRICE** &nbsp;<span class='av-hint' title='Price is 2025 ex-showroom. Your on-road price will be higher by ~8–12%.'>?</span>", unsafe_allow_html=True)
+    variant_opts = [f"{v}  ·  ₹{p:.2f}L" for v, p in zip(variants, prices)]
+    variant_sel  = st.selectbox("Variant", variant_opts, label_visibility="collapsed",
+                                 help="Price shown is ex-showroom (2025). Override with actual on-road in Finance section.")
+    vi           = variant_opts.index(variant_sel)
+    variant      = variants[vi]
+    auto_price   = prices[vi]
 
-# Price display
-price_color = "#FF2800" if auto_price > 80 else "#1A1A1A"
+# Price banner
+tier = BRAND_TIER.get(brand, "Volume")
+tier_colors = {"Volume":"#1A1A1A","Upper":"#5B4FCF","Luxury":"#B8860B","Ultra Luxury":"#8B0000"}
+tier_color  = tier_colors.get(tier,"#1A1A1A")
+
 st.markdown(f"""
-<div style="display:flex;align-items:center;gap:16px;margin:12px 0;">
-    <div style="background:#1A1A1A;color:white;padding:10px 20px;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.4rem;">
-        ₹{auto_price:.2f}L
+<div class="av-price-display">
+    <div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.5);margin-bottom:4px;">EX-SHOWROOM PRICE</div>
+        <div class="av-price-main">₹<span class="av-price-red">{auto_price:.2f}</span>L</div>
     </div>
-    <div style="border:1.5px solid #1A1A1A;padding:4px 10px;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">{seg}</div>
-    <div style="border:1.5px solid #FF2800;color:#FF2800;padding:4px 10px;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">{brand}</div>
+    <div style="border-left:1px solid rgba(255,255,255,0.2);padding-left:24px;display:flex;flex-direction:column;gap:8px;">
+        <span class="av-tag av-tag-white">{seg}</span>
+        <span class="av-tag av-tag-outline">{brand.upper()}</span>
+    </div>
+    <div style="margin-left:auto;text-align:right;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.4);margin-bottom:4px;">TIER</div>
+        <div style="font-family:var(--font-mono);font-size:0.85rem;font-weight:700;color:{tier_color};background:white;padding:4px 12px;">{tier.upper()}</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
-# ── USAGE & HISTORY ──────────────────────────────────────────────────────────
-st.markdown('<div class="section-panel">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">USAGE & HISTORY</div>', unsafe_allow_html=True)
+st.markdown("<br/>", unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    mfg_year = st.selectbox("MANUFACTURING YEAR", list(range(2025, 2014, -1)))
-with col2:
-    current_mileage = st.number_input("CURRENT ODOMETER (KM)", min_value=0, max_value=500000,
-                                       value=15000, step=500, help="Total km driven till date")
-with col3:
-    annual_mileage = st.slider("ANNUAL MILEAGE (KM/YR)", 3000, 60000, 12000, 1000)
-with col4:
-    ownership_period = st.slider("PLANNED OWNERSHIP (YRS)", 1, 12, 5, 1)
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 2 — USAGE & HISTORY
+# ═══════════════════════════════════════════════════════════════════════════════
 
-col5, col6 = st.columns(2)
-with col5:
-    city = st.selectbox("PRIMARY USAGE CITY", CITIES)
-with col6:
-    income = st.number_input("MONTHLY INCOME ₹ (OPTIONAL — for burden calc)",
-                              min_value=0, max_value=50000000, value=0, step=10000,
-                              help="Used only to calculate ownership burden percentage")
+st.markdown("""
+<div class="av-panel-head" style="margin-bottom:16px;">
+    <div class="av-panel-icon">📊</div>
+    <div>
+        <div class="av-panel-title">STEP 02</div>
+        <div class="av-panel-subtitle">Usage &amp; History</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+u1, u2, u3, u4 = st.columns(4)
 
-# ── FUEL TYPE & EV SPECIFICS ─────────────────────────────────────────────────
-st.markdown('<div class="section-panel">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">FUEL TYPE</div>', unsafe_allow_html=True)
+with u1:
+    mfg_year = st.selectbox("MANUFACTURING YEAR",
+                             list(range(2025, 2014, -1)),
+                             help="Year the vehicle was manufactured (not registration year)")
+with u2:
+    current_mileage = st.number_input("CURRENT ODOMETER (KM)",
+                                       min_value=0, max_value=500000, value=12000, step=500,
+                                       help="Total kilometres on odometer right now")
+with u3:
+    annual_mileage = st.slider("ANNUAL MILEAGE (KM/YR)",
+                                3000, 60000, 12000, 1000,
+                                help="How many km you typically drive per year")
+with u4:
+    ownership_period = st.slider("PLANNED OWNERSHIP (YEARS)",
+                                  1, 12, 5, 1,
+                                  help="How many years you plan to keep this vehicle")
 
-available_fuels = fuels + (["Petrol"] if "Petrol" not in fuels else [])
-available_fuels = list(dict.fromkeys(fuels))  # Deduplicate preserving order
-fuel_type = st.radio("SELECT FUEL TYPE", available_fuels, horizontal=True)
+import datetime
+current_year = datetime.datetime.now().year
+age = max(0, current_year - mfg_year)
+
+# Usage insight callout
+intensity = annual_mileage / 12000
+usage_label = "LOW" if intensity < 0.75 else "MODERATE" if intensity < 1.5 else "HIGH"
+usage_color = "#006400" if intensity < 0.75 else "#E07000" if intensity < 1.5 else "#FF2800"
+
+u5, u6 = st.columns(2)
+with u5:
+    city = st.selectbox("PRIMARY USAGE CITY", CITIES,
+                        help="Affects thermal stress, road quality penalty, and depreciation assumptions")
+    st.markdown(f"<div class='field-help'>🏙️ Selected: <strong>{city}</strong> — affects maintenance risk and climate adjustment</div>", unsafe_allow_html=True)
+
+with u6:
+    income = st.number_input("MONTHLY INCOME ₹ (OPTIONAL)",
+                              min_value=0, max_value=50_000_000, value=0, step=10000,
+                              help="Used only to calculate ownership burden % — leave 0 to skip")
+    st.markdown("<div class='field-help'>🔒 Used only for ownership burden calculation. Not stored or shared.</div>", unsafe_allow_html=True)
+
+# Usage summary chips
+st.markdown(f"""
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+    <span class="seg-pill active">Age: {age} {'yr' if age==1 else 'yrs'}</span>
+    <span class="seg-pill active">{mileage if (mileage:=current_mileage) else 0:,} km on clock</span>
+    <span class="seg-pill active" style="border-color:{usage_color};color:{usage_color};">Usage: {usage_label} ({annual_mileage:,} km/yr)</span>
+    <span class="seg-pill active">{ownership_period}yr ownership</span>
+    <span class="seg-pill active">{city}</span>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<br/>", unsafe_allow_html=True)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 3 — FUEL TYPE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+st.markdown("""
+<div class="av-panel-head" style="margin-bottom:16px;">
+    <div class="av-panel-icon red">⛽</div>
+    <div>
+        <div class="av-panel-title">STEP 03</div>
+        <div class="av-panel-subtitle">Fuel Type</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+available_fuels = list(dict.fromkeys(fuels))
+fuel_type = st.radio(
+    "FUEL TYPE",
+    available_fuels,
+    horizontal=True,
+    help="Only fuel types available for this model are shown"
+)
+
+# Fuel cost insight
+FUEL_COST_NOTE = {
+    "Petrol":  "~₹106/L · ~17–22 km/L · High fuel price volatility",
+    "Diesel":  "~₹94/L  · ~18–25 km/L · Better highway efficiency",
+    "CNG":     "~₹80/kg  · ~25–30 km/kg · Lowest running cost",
+    "EV":      "~₹8/kWh · ~5–7 km/kWh · Zero emission, lowest per-km cost",
+    "Hybrid":  "~₹106/L · ~22–28 km/L · Self-charging, best city efficiency",
+}
+st.markdown(f"<div class='field-help'>{FUEL_ICONS.get(fuel_type,'⛽')} {FUEL_COST_NOTE.get(fuel_type,'')}</div>", unsafe_allow_html=True)
+
+# EV specifics
+battery_capacity, charging_freq, fast_charge_pct = None, None, 0
 
 if fuel_type == "EV":
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("**EV BATTERY DETAILS**")
+    st.markdown("""
+    <div style="background:rgba(255,40,0,0.05);border:1.5px dashed #FF2800;padding:16px 20px;margin-bottom:12px;">
+        <span style="font-family:var(--font-mono);font-size:0.7rem;font-weight:700;letter-spacing:0.2em;color:#FF2800;">
+        ⚡ EV BATTERY PARAMETERS — Required for accurate health and degradation analysis
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
     ev1, ev2, ev3 = st.columns(3)
     with ev1:
-        battery_capacity = st.number_input("BATTERY CAPACITY (kWh)", 10.0, 200.0, 40.0, 0.5)
+        battery_capacity = st.number_input("BATTERY CAPACITY (kWh)",
+                                            10.0, 200.0, 40.0, 0.5,
+                                            help="Total usable battery capacity from manufacturer spec sheet")
     with ev2:
-        charging_freq = st.selectbox("CHARGING FREQUENCY", ["Daily", "Every 2-3 Days", "Weekly", "Rarely"])
+        charging_freq = st.selectbox("CHARGING FREQUENCY",
+                                      ["Daily", "Every 2–3 Days", "Weekly", "Rarely"],
+                                      help="How often you charge the vehicle")
     with ev3:
-        fast_charge_pct = st.slider("FAST CHARGING %", 0, 100, 20,
-                                     help="% of charging sessions that use DC fast chargers")
-    battery_capacity = battery_capacity
+        fast_charge_pct = st.slider("DC FAST CHARGING %", 0, 100, 20,
+                                     help="% of sessions using DC fast chargers (>50kW). High % degrades battery faster.")
+        if fast_charge_pct > 60:
+            st.warning(f"⚠️ {fast_charge_pct}% fast charging accelerates battery degradation.")
+
+st.markdown("<br/>", unsafe_allow_html=True)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 4 — FINANCING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+st.markdown("""
+<div class="av-panel-head" style="margin-bottom:16px;">
+    <div class="av-panel-icon">💰</div>
+    <div>
+        <div class="av-panel-title">STEP 04</div>
+        <div class="av-panel-subtitle">Financing Details</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+f1, f2, f3, f4 = st.columns(4)
+with f1:
+    on_road = st.number_input(
+        "ON-ROAD PRICE (₹L)",
+        min_value=1.0, max_value=600.0,
+        value=round(auto_price * 1.10, 1), step=0.10,
+        help="Ex-showroom + RTO + Insurance + Accessories. Typically ex-showroom × 1.08–1.12"
+    )
+    diff = round((on_road / auto_price - 1) * 100, 1)
+    if diff > 0:
+        st.markdown(f"<div class='field-help'>+{diff}% over ex-showroom · Auto-filled at 10%</div>", unsafe_allow_html=True)
+
+with f2:
+    down_pct = st.slider("DOWN PAYMENT %", 0, 100, 20, 5,
+                          help="Percentage of on-road price you pay upfront")
+with f3:
+    loan_rate = st.slider("INTEREST RATE %", 6.0, 20.0, 9.0, 0.25,
+                           help="Annual interest rate from your bank/NBFC. Typically 8.5–12% for new cars")
+with f4:
+    tenure = st.selectbox("LOAN TENURE",
+                           [12, 24, 36, 48, 60, 72, 84],
+                           index=4,
+                           format_func=lambda x: f"{x} months ({x//12} yr{'' if x//12==1 else 's'})",
+                           help="Longer tenure = lower EMI but higher total interest paid")
+
+# Live EMI computation
+principal = on_road * (1 - down_pct / 100) * 100000
+down_amt  = on_road * down_pct / 100
+if loan_rate > 0 and tenure > 0 and down_pct < 100:
+    r   = loan_rate / (12 * 100)
+    emi = principal * r * (1 + r)**tenure / ((1 + r)**tenure - 1)
+    total_paid = emi * tenure
+    interest   = total_paid - principal
 else:
-    battery_capacity, charging_freq, fast_charge_pct = None, None, 0
+    emi = principal / tenure if tenure > 0 else 0
+    interest = 0
+    total_paid = principal
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown(f"""
+<div class="av-emi-bar">
+    <div class="av-emi-cell">
+        <div class="av-emi-label">Monthly EMI</div>
+        <div class="av-emi-value red">₹{emi:,.0f}</div>
+    </div>
+    <div class="av-emi-cell">
+        <div class="av-emi-label">Down Payment</div>
+        <div class="av-emi-value">₹{down_amt:.2f}L</div>
+    </div>
+    <div class="av-emi-cell">
+        <div class="av-emi-label">Total Interest</div>
+        <div class="av-emi-value">₹{interest/100000:.2f}L</div>
+    </div>
+    <div class="av-emi-cell">
+        <div class="av-emi-label">Loan Amount</div>
+        <div class="av-emi-value">₹{principal/100000:.2f}L</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# ── FINANCING ────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-panel">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">FINANCING</div>', unsafe_allow_html=True)
+# Interest warning
+interest_pct = (interest / principal * 100) if principal > 0 else 0
+if interest_pct > 40:
+    st.warning(f"⚠️ You'll pay **₹{interest/100000:.2f}L in interest** — {interest_pct:.0f}% extra over {tenure//12} years. Consider a shorter tenure or larger down payment.")
 
-fin1, fin2, fin3, fin4 = st.columns(4)
-with fin1:
-    purchase_price_override = st.number_input("FINAL ON-ROAD PRICE (₹L)",
-                                               min_value=1.0, max_value=600.0,
-                                               value=round(auto_price * 1.10, 2), step=0.10,
-                                               help="Ex-showroom × ~1.10 for on-road (RTO + insurance)")
-with fin2:
-    down_payment_pct = st.slider("DOWN PAYMENT %", 0, 100, 20, 5)
-with fin3:
-    loan_rate = st.slider("LOAN INTEREST RATE %", 6.0, 20.0, 9.0, 0.25)
-with fin4:
-    tenure_months = st.selectbox("LOAN TENURE", [12, 24, 36, 48, 60, 72, 84], index=4,
-                                  format_func=lambda x: f"{x} months ({x//12} yr{'' if x//12==1 else 's'})")
+st.markdown("<br/><br/>", unsafe_allow_html=True)
 
-# Live EMI preview
-if loan_rate > 0 and tenure_months > 0 and down_payment_pct < 100:
-    principal = purchase_price_override * (1 - down_payment_pct/100) * 100000
-    r = loan_rate / (12 * 100)
-    emi = principal * r * (1 + r)**tenure_months / ((1 + r)**tenure_months - 1)
-    total_interest = emi * tenure_months - principal
+# ═══════════════════════════════════════════════════════════════════════════════
+# REVIEW & SUBMIT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+st.markdown("<hr/>", unsafe_allow_html=True)
+st.markdown("<h2>REVIEW YOUR CONFIGURATION</h2>", unsafe_allow_html=True)
+
+# Summary 2-col layout
+rs1, rs2 = st.columns(2)
+
+with rs1:
     st.markdown(f"""
-    <div style="display:flex;gap:24px;margin-top:12px;padding:14px 18px;background:#1A1A1A;color:white;">
-        <div>
-            <div style="font-size:0.65rem;letter-spacing:0.2em;opacity:0.7;">MONTHLY EMI</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:#FF2800;">
-                ₹{emi:,.0f}
-            </div>
+    <div style="background:white;border:2px solid #1A1A1A;padding:24px;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.2em;color:var(--c-text-muted);margin-bottom:4px;">VEHICLE</div>
+        <div style="font-size:1.4rem;font-weight:900;text-transform:uppercase;margin-bottom:16px;line-height:1.2;">
+            {brand}<br/><span style="color:#FF2800;">{model}</span>
         </div>
-        <div>
-            <div style="font-size:0.65rem;letter-spacing:0.2em;opacity:0.7;">LOAN AMOUNT</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;">
-                ₹{principal/100000:.2f}L
-            </div>
-        </div>
-        <div>
-            <div style="font-size:0.65rem;letter-spacing:0.2em;opacity:0.7;">TOTAL INTEREST</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;">
-                ₹{total_interest/100000:.2f}L
-            </div>
-        </div>
-        <div>
-            <div style="font-size:0.65rem;letter-spacing:0.2em;opacity:0.7;">DOWN PAYMENT</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;">
-                ₹{purchase_price_override * down_payment_pct/100:.2f}L
-            </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">Variant</div><div style="font-weight:700;font-size:0.85rem;">{variant}</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">Fuel</div><div style="font-weight:700;font-size:0.85rem;">{FUEL_ICONS.get(fuel_type,'')} {fuel_type}</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">Year</div><div style="font-weight:700;font-size:0.85rem;">{mfg_year} · Age {age}yr</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">City</div><div style="font-weight:700;font-size:0.85rem;">{city}</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">Odometer</div><div style="font-weight:700;font-size:0.85rem;">{current_mileage:,} km</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.2em;color:#888;text-transform:uppercase;">Annual KM</div><div style="font-weight:700;font-size:0.85rem;">{annual_mileage:,} km</div></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+with rs2:
+    st.markdown(f"""
+    <div style="background:#1A1A1A;padding:24px;border:2px solid #1A1A1A;">
+        <div style="font-family:var(--font-mono);font-size:0.65rem;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.4);margin-bottom:4px;">FINANCIAL SNAPSHOT</div>
+        <div style="font-family:var(--font-mono);font-size:2.5rem;font-weight:700;color:#FF2800;line-height:1;">₹{on_road:.1f}L</div>
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:rgba(255,255,255,0.4);margin-bottom:20px;letter-spacing:0.1em;">ON-ROAD PRICE</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">MONTHLY EMI</div><div style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:white;">₹{emi:,.0f}</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">DOWN PAYMENT</div><div style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:white;">₹{down_amt:.1f}L</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">TOTAL INTEREST</div><div style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:#FF2800;">₹{interest/100000:.2f}L</div></div>
+            <div><div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">OWNERSHIP</div><div style="font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:white;">{ownership_period} yrs</div></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# ── ANALYZE BUTTON ────────────────────────────────────────────────────────────
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<br/>", unsafe_allow_html=True)
 
-if st.button("ANALYZE VEHICLE  →", use_container_width=True, type="primary"):
-    if model == "" or brand == "":
-        st.error("Please select a brand and model.")
-    else:
-        st.session_state.vehicle_data = {
-            "brand": brand,
-            "model": model,
-            "variant": variant,
-            "fuel_type": fuel_type,
-            "segment": seg,
-            "purchase_price": purchase_price_override,
-            "ex_showroom_price": auto_price,
-            "mfg_year": mfg_year,
-            "current_mileage": current_mileage,
-            "annual_mileage": annual_mileage,
-            "ownership_period": ownership_period,
-            "city": city,
-            "income": income,
-            "battery_capacity": battery_capacity,
-            "charging_freq": charging_freq,
-            "fast_charge_pct": fast_charge_pct if fuel_type == "EV" else 0,
-            "down_payment_pct": down_payment_pct,
-            "loan_rate": loan_rate,
-            "tenure_months": tenure_months,
-        }
-        st.success(f"✓ {brand} {model} {variant} configured. Proceeding to Health Analysis...")
-        st.balloons()
-        st.switch_page("pages/02_Vehicle_Health.py")
+# ── ANALYZE CTA ───────────────────────────────────────────────────────────────
+col_btn, col_note = st.columns([2, 1])
+
+with col_btn:
+    analyze = st.button(f"  ANALYZE {brand.upper()} {model.upper()}  →",
+                         use_container_width=True, type="primary")
+
+with col_note:
+    st.markdown("""
+    <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--c-text-muted);line-height:1.7;padding:8px 0;">
+    ↳ Proceeds to 8-module analysis<br/>
+    ↳ Health · Depreciation · Maintenance<br/>
+    ↳ TCO · Risk · Simulator · Compare
+    </div>
+    """, unsafe_allow_html=True)
+
+if analyze:
+    st.session_state.vehicle_data = {
+        "brand": brand, "model": model, "variant": variant,
+        "fuel_type": fuel_type, "segment": seg,
+        "purchase_price": on_road, "ex_showroom_price": auto_price,
+        "mfg_year": mfg_year, "current_mileage": current_mileage,
+        "annual_mileage": annual_mileage, "ownership_period": ownership_period,
+        "city": city, "income": income,
+        "battery_capacity": battery_capacity,
+        "charging_freq": charging_freq,
+        "fast_charge_pct": fast_charge_pct if fuel_type == "EV" else 0,
+        "down_payment_pct": down_pct,
+        "loan_rate": loan_rate,
+        "tenure_months": tenure,
+    }
+    st.success(f"✅ **{brand} {model} · {variant}** configured. Launching analysis...")
+    st.balloons()
+    import time
+    time.sleep(0.8)
+    st.switch_page("pages/02_Vehicle_Health.py")
+
+# Bottom spacer
+st.markdown("<div class='sticky-spacer'></div>", unsafe_allow_html=True)
+
+# ── Sticky bottom summary bar ─────────────────────────────────────────────────
+st.markdown(f"""
+<div class="sticky-cta">
+    <div>
+        <div class="sticky-vehicle-name">{brand} · {model} · {variant}</div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;">
+            {mfg_year} · {fuel_type} · {city} · {annual_mileage:,} km/yr
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:32px;">
+        <div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;">ON-ROAD</div>
+            <div class="sticky-price">₹{on_road:.1f}L</div>
+        </div>
+        <div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;">MONTHLY EMI</div>
+            <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:white;">₹{emi:,.0f}</div>
+        </div>
+        <div>
+            <div style="font-family:var(--font-mono);font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;">OWNERSHIP</div>
+            <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:white;">{ownership_period} YRS</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
