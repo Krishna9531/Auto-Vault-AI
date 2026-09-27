@@ -8,8 +8,11 @@ st.set_page_config(page_title='Compare', page_icon='🚗', layout='wide')
 try:
     from app.components.navigation import build_sidebar
     build_sidebar()
+except Exception as e:
+    pass
 
 if "vehicle_data" not in st.session_state or not st.session_state.vehicle_data:
+    import streamlit as st
     st.markdown("<div style='text-align:center; padding: 60px 20px;'><h2 style='color:#FF2800; font-weight:900;'>VEHICLE REQUIRED</h2><p style='color:#555; font-size:1.1rem; margin-bottom: 30px;'>Please configure a vehicle first to view this analysis module.</p></div>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
@@ -17,8 +20,6 @@ if "vehicle_data" not in st.session_state or not st.session_state.vehicle_data:
             st.switch_page("pages/01_Vehicle_Input.py")
     st.stop()
 
-except Exception as e:
-    pass
 
 
 def load_css():
