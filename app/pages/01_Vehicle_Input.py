@@ -13,6 +13,12 @@ import plotly.graph_objects as go
 import plotly.express as px
 import datetime
 
+def format_price(val_lakhs):
+    if val_lakhs >= 100:
+        return f"Rs.{val_lakhs/100:.2f}Cr"
+    return format_price(val_lakhs)
+
+
 st.set_page_config(
     page_title="Vehicle Input | AUTOVAULT AI",
     page_icon="🚗",
@@ -221,6 +227,20 @@ hr { border:none; border-top:2px solid #1A1A1A; margin:24px 0; }
 # ═══════════════════════════════════════════════════════════════════════════════
 
 DB = {
+
+    "Ferrari": {
+        "SF90 Stradale": {"v":["Base"], "p":[750.0], "f":["Hybrid"], "seg":"Supercar"},
+        "296 GTB":       {"v":["Base"], "p":[540.0], "f":["Hybrid"], "seg":"Supercar"},
+        "Roma":          {"v":["Base"], "p":[376.0], "f":["Petrol"], "seg":"Grand Tourer"},
+        "Purosangue":    {"v":["Base"], "p":[1050.0], "f":["Petrol"], "seg":"Super SUV"}
+    },
+    "Bugatti": {
+        "Chiron":        {"v":["Base", "Pur Sport", "Super Sport"], "p":[1920.0, 2400.0, 2800.0], "f":["Petrol"], "seg":"Hypercar"}
+    },
+    "Koenigsegg": {
+        "Jesko":         {"v":["Absolut", "Attack"], "p":[2400.0, 2600.0], "f":["Petrol"], "seg":"Hypercar"},
+        "Gemera":        {"v":["Base"], "p":[1600.0], "f":["Hybrid"], "seg":"Hypercar"}
+    },
     # VOLUME
     "Maruti Suzuki": {
         "Alto K10":     {"v":["STD","LXI","VXI","ZXI","ZXI+"],               "p":[3.99,4.26,4.79,5.45,5.83], "f":["Petrol","CNG"],          "seg":"Hatchback"},
@@ -449,7 +469,7 @@ fuels    = mdata.get("f", ["Petrol"])
 seg_name = mdata.get("seg", "")
 
 with sel3:
-    variant_opts = [f"{v}  —  Rs.{p:.2f}L" for v, p in zip(variants, prices)]
+    variant_opts = [f"{v}  —  {format_price(p)}" for v, p in zip(variants, prices)]
     v_sel = st.selectbox("VARIANT", variant_opts, help="Price shown is 2025 ex-showroom")
     vi       = variant_opts.index(v_sel)
     variant  = variants[vi]
@@ -460,7 +480,7 @@ st.markdown(f"""
 <div class="price-hero">
     <div>
         <div class="label">EX-SHOWROOM PRICE</div>
-        <div class="main">Rs.{ex_price:.2f}L</div>
+        <div class="main">{format_price(ex_price)}</div>
         <div class="sub">{brand} {model} · {variant} · {seg_name}</div>
     </div>
 </div>
@@ -472,10 +492,10 @@ colors = ["#FF2800" if v == variant else "#1A1A1A" for v in variants]
 fig_var = go.Figure(go.Bar(
     x=variants, y=prices,
     marker_color=colors,
-    text=[f"Rs.{p:.2f}L" for p in prices],
+    text=[format_price(p) for p in prices],
     textposition="outside",
     textfont=dict(family="IBM Plex Mono", size=11, color="#1A1A1A"),
-    hovertemplate="<b>%{x}</b><br>Rs.%{y:.2f}L<extra></extra>",
+    hovertemplate="<b>%{x}</b><br>%{text}<extra></extra>",
 ))
 fig_var.update_layout(
     **THEME,
@@ -548,8 +568,8 @@ with d1:
         fillcolor="rgba(255,40,0,0.07)",
         line=dict(color="#FF2800", width=3),
         marker=dict(size=9, color="#1A1A1A", symbol="circle"),
-        text=[f"Rs.{v:.2f}L" for v in dep_vals],
-        hovertemplate="Year %{x}: Rs.%{text}<extra></extra>",
+        text=[format_price(v) for v in dep_vals],
+        hovertemplate="Year %{x}: %{text}<extra></extra>",
     ))
     fig_dep.update_layout(
         **THEME, height=200,
@@ -564,11 +584,11 @@ with d2:
     <div style="background:#1A1A1A;padding:20px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:12px;margin-top:28px;">
         <div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);">PURCHASE</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">Rs.{ex_price:.2f}L</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">{format_price(ex_price)}</div>
         </div>
         <div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);">EST. RESALE ({ownership}yr)</div>
-            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:#FF2800;">Rs.{dep_vals[-1]:.2f}L</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:#FF2800;">{format_price(dep_vals[-1])}</div>
         </div>
         <div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);">TOTAL DEPRECIATION</div>
@@ -621,10 +641,10 @@ bar_colors = ["#FF2800" if f == fuel_type else "#D0D0C8" for f in avail_fuels_al
 fig_fuel = go.Figure(go.Bar(
     x=avail_fuels_all, y=cost_vals,
     marker_color=bar_colors,
-    text=[f"Rs.{v:.2f}L/yr" for v in cost_vals],
+    text=[f"{format_price(v)}/yr" for v in cost_vals],
     textposition="outside",
     textfont=dict(family="IBM Plex Mono", size=10),
-    hovertemplate="<b>%{x}</b><br>Rs.%{y:.2f}L per year<extra></extra>",
+    hovertemplate="<b>%{x}</b><br>%{text} per year<extra></extra>",
 ))
 fig_fuel.update_layout(
     **THEME, height=200,
@@ -702,15 +722,15 @@ st.markdown(f"""
     </div>
     <div class="emi-cell">
         <div class="emi-key">Down Payment</div>
-        <div class="emi-val">Rs.{down_amt:.1f}L</div>
+        <div class="emi-val">{format_price(down_amt)}</div>
     </div>
     <div class="emi-cell">
         <div class="emi-key">Total Interest</div>
-        <div class="emi-val">Rs.{interest/100000:.2f}L</div>
+        <div class="emi-val">{format_price(interest/100000)}</div>
     </div>
     <div class="emi-cell">
         <div class="emi-key">Loan Amount</div>
-        <div class="emi-val">Rs.{principal/100000:.2f}L</div>
+        <div class="emi-val">{format_price(principal/100000)}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -742,7 +762,7 @@ st.markdown("<div class='chart-label'>EMI BREAKDOWN — PRINCIPAL VS INTEREST (M
 st.plotly_chart(fig_emi, use_container_width=True)
 
 if interest > principal * 0.35:
-    st.warning(f"You'll pay Rs.{interest/100000:.2f}L in interest — consider a larger down payment or shorter tenure.")
+    st.warning(f"You'll pay {format_price(interest/100000)} in interest — consider a larger down payment or shorter tenure.")
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
@@ -779,11 +799,11 @@ with rc2:
     st.markdown(f"""
     <div style="background:#1A1A1A;padding:24px;height:100%;">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);margin-bottom:4px;">ON-ROAD PRICE</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:2.6rem;font-weight:700;color:#FF2800;line-height:1;margin-bottom:20px;">Rs.{on_road:.1f}L</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:2.6rem;font-weight:700;color:#FF2800;line-height:1;margin-bottom:20px;">{format_price(on_road)}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">EMI</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">Rs.{emi:,.0f}/mo</div></div>
-            <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">DOWN</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">Rs.{down_amt:.1f}L</div></div>
-            <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">EST. RESALE</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:#FF2800;">Rs.{dep_vals[-1]:.2f}L</div></div>
+            <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">DOWN</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">{format_price(down_amt)}</div></div>
+            <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">EST. RESALE</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:#FF2800;">{format_price(dep_vals[-1])}</div></div>
             <div><div style="font-family:'IBM Plex Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);">OWNERSHIP</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:white;">{ownership} YRS</div></div>
         </div>
     </div>
