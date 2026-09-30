@@ -1,6 +1,6 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
-01 Vehicle Input â€” AUTOVAULT AI
+01 Vehicle Input — AUTOVAULT AI
 Clean single-flow form. No duplicate controls.
 Built-in live visualizations: variant price chart, depreciation preview.
 """
@@ -34,7 +34,7 @@ except Exception as e:
     pass
 
 
-# â”€â”€ Design System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ Design System ─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Inter:wght@400;600;700;900&display=swap');
@@ -44,12 +44,12 @@ html, body, .stApp { background: #F4F4EF !important; font-family: 'Inter', sans-
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 2.5rem 3rem !important; max-width: 1300px !important; }
 
-/* â”€â”€ Typography â”€â”€ */
+/* ─€─€ Typography ─€─€ */
 h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.01em; color: #1A1A1A; margin: 0; }
 h2 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1A1A1A; }
 h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #888; }
 
-/* â”€â”€ Inputs â”€â”€ */
+/* ─€─€ Inputs ─€─€ */
 label {
   font-size: 0.68rem !important;
   font-weight: 700 !important;
@@ -83,14 +83,14 @@ label {
   outline: none !important;
 }
 
-/* â”€â”€ Slider â”€â”€ */
+/* ─€─€ Slider ─€─€ */
 .stSlider [role="slider"] {
   background: #FF2800 !important;
   border: 2px solid #1A1A1A !important;
   width: 20px !important; height: 20px !important;
 }
 
-/* â”€â”€ Radio (segment selector) â”€â”€ */
+/* ─€─€ Radio (segment selector) ─€─€ */
 .stRadio > div { display: flex !important; gap: 0 !important; }
 .stRadio label {
   border: 2px solid #1A1A1A !important;
@@ -110,7 +110,7 @@ label {
 .stRadio label span:first-child { display: none !important; }
 .stRadio input { display: none !important; }
 
-/* â”€â”€ Buttons â”€â”€ */
+/* ─€─€ Buttons ─€─€ */
 .stButton > button {
   border-radius: 0 !important;
   font-family: 'IBM Plex Mono', monospace !important;
@@ -145,7 +145,7 @@ label {
   color: white !important;
 }
 
-/* â”€â”€ Section card â”€â”€ */
+/* ─€─€ Section card ─€─€ */
 .sec { background: white; border: 2px solid #1A1A1A; padding: 28px; margin-bottom: 20px; }
 .sec-head {
   display: flex; align-items: center; gap: 12px;
@@ -160,7 +160,7 @@ label {
 .sec-num.red { background: #FF2800; }
 .sec-title { font-size: 1rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
 
-/* â”€â”€ Price display â”€â”€ */
+/* ─€─€ Price display ─€─€ */
 .price-hero {
   background: #1A1A1A; color: white;
   padding: 20px 28px; margin: 16px 0;
@@ -178,7 +178,7 @@ label {
 }
 .price-hero .sub { font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.7); }
 
-/* â”€â”€ EMI bar â”€â”€ */
+/* ─€─€ EMI bar ─€─€ */
 .emi-bar {
   display: grid; grid-template-columns: repeat(4,1fr);
   gap: 2px; background: #1A1A1A;
@@ -190,7 +190,7 @@ label {
 .emi-val { font-family:'IBM Plex Mono',monospace; font-size:1.3rem; font-weight:700; color:#1A1A1A; }
 .emi-val.red { color:#FF2800; }
 
-/* â”€â”€ Summary review â”€â”€ */
+/* ─€─€ Summary review ─€─€ */
 .review-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
   background: #1A1A1A; border: 2px solid #1A1A1A;
@@ -203,10 +203,10 @@ label {
 .rv-val.light { color:white; }
 .rv-val.red { color:#FF2800; }
 
-/* â”€â”€ Info note â”€â”€ */
+/* ─€─€ Info note ─€─€ */
 .info-note { border-left: 3px solid #FF2800; padding: 8px 14px; background: rgba(255,40,0,0.05); font-size:0.8rem; color:#555; margin: 8px 0; }
 
-/* â”€â”€ Chart section â”€â”€ */
+/* ─€─€ Chart section ─€─€ */
 .chart-label {
   font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
   font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#888;
@@ -222,9 +222,9 @@ hr { border:none; border-top:2px solid #1A1A1A; margin:24px 0; }
 </style>
 """, unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 # VEHICLE DATA
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 
 from app.utils.vehicle_db import DB
 
@@ -237,26 +237,26 @@ CITIES = ["Mumbai","Delhi","Bengaluru","Chennai","Hyderabad","Pune","Kolkata",
           "Ahmedabad","Jaipur","Surat","Lucknow","Chandigarh","Kochi",
           "Coimbatore","Nagpur","Indore","Bhopal","Visakhapatnam","Noida","Gurugram"]
 
-# â”€â”€ Plotly theme â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ Plotly theme ─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€
 THEME = dict(
     plot_bgcolor="#FFFFFF", paper_bgcolor="#F4F4EF",
     font=dict(family="IBM Plex Mono, monospace", color="#1A1A1A"),
     margin=dict(l=10,r=10,t=30,b=10),
 )
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAGE
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 
 # Header
 col_h1, col_h2 = st.columns([3,1])
 with col_h1:
     st.markdown("""
     <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;font-weight:700;
-    letter-spacing:0.25em;color:#FF2800;margin-bottom:6px;">AUTOVAULT AI Â· 01</div>
+    letter-spacing:0.25em;color:#FF2800;margin-bottom:6px;">AUTOVAULT AI · 01</div>
     <h1>Configure Your Vehicle</h1>
     <p style="color:#888;margin-top:6px;font-size:0.9rem;">
-    Select brand, model and variant â€” exact prices and live analysis load automatically.
+    Select brand, model and variant — exact prices and live analysis load automatically.
     </p>
     """, unsafe_allow_html=True)
 with col_h2:
@@ -264,16 +264,16 @@ with col_h2:
     <div style="background:#1A1A1A;color:white;padding:16px 20px;margin-top:16px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);">WHAT HAPPENS NEXT</div>
     <div style="font-size:0.78rem;margin-top:6px;line-height:1.7;color:rgba(255,255,255,0.7);">
-    Health Â· Depreciation<br/>Maintenance Â· TCO<br/>Risk Â· Simulator Â· Compare
+    Health · Depreciation<br/>Maintenance · TCO<br/>Risk · Simulator · Compare
     </div>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SECTION 1 â€” VEHICLE
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 1 — VEHICLE
+# ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
 <div class="sec-head">
@@ -282,7 +282,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Single segment filter â€” radio, not tabs (avoids the duplicate brand bug)
+# Single segment filter — radio, not tabs (avoids the duplicate brand bug)
 segment = st.radio("FILTER BY SEGMENT", ["ALL", "Volume", "Luxury", "Ultra Luxury"],
                    horizontal=True)
 
@@ -322,7 +322,7 @@ fuels    = mdata.get("f", ["Petrol"])
 seg_name = mdata.get("seg", "")
 
 with sel4:
-    variant_opts = [f"{v}  â€”  {format_price(p)}" for v, p in zip(variants, prices)]
+    variant_opts = [f"{v}  —  {format_price(p)}" for v, p in zip(variants, prices)]
     v_sel = st.selectbox("VARIANT", variant_opts)
     vi       = variant_opts.index(v_sel)
     variant  = variants[vi]
@@ -334,12 +334,12 @@ st.markdown(f"""
     <div>
         <div class="label">EX-SHOWROOM PRICE</div>
         <div class="main">{format_price(ex_price)}</div>
-        <div class="sub">{brand} {model} Â· {variant} Â· {seg_name}</div>
+        <div class="sub">{brand} {model} · {variant} · {seg_name}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# â”€â”€ VISUALIZATION 1: Variant price comparison bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ VISUALIZATION 1: Variant price comparison bar ─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€
 st.markdown("<div class='chart-label'>VARIANT PRICE COMPARISON</div>", unsafe_allow_html=True)
 colors = ["#FF2800" if v == variant else "#1A1A1A" for v in variants]
 fig_var = go.Figure(go.Bar(
@@ -365,9 +365,9 @@ st.plotly_chart(fig_var, use_container_width=True)
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SECTION 2 â€” USAGE
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 2 — USAGE
+# ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
 <div class="sec-head">
@@ -395,7 +395,7 @@ with u6:
 current_year = datetime.datetime.now().year
 age = max(0, current_year - mfg_year)
 
-# â”€â”€ VISUALIZATION 2: 5-year depreciation preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ VISUALIZATION 2: 5-year depreciation preview ─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€
 DEPR = {"Petrol":[0.15,0.12,0.10,0.09,0.08,0.07,0.07],
         "Diesel":[0.18,0.13,0.10,0.09,0.08,0.07,0.07],
         "EV":    [0.20,0.15,0.12,0.10,0.09,0.08,0.08],
@@ -451,9 +451,9 @@ with d2:
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SECTION 3 â€” FUEL TYPE
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 3 — FUEL TYPE
+# ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
 <div class="sec-head">
@@ -465,21 +465,21 @@ st.markdown("""
 fuel_type = st.radio("SELECT FUEL", list(dict.fromkeys(fuels)), horizontal=True)
 
 FUEL_DATA = {
-    "Petrol": ("~Rs.106/L","17â€“22 km/L","High price volatility risk"),
-    "Diesel": ("~Rs.94/L","18â€“25 km/L","Better highway range"),
-    "CNG":    ("~Rs.80/kg","25â€“30 km/kg","Lowest running cost"),
-    "EV":     ("~Rs.8/kWh","5â€“7 km/kWh","Zero emission, cheapest per km"),
-    "Hybrid": ("~Rs.106/L","22â€“28 km/L","Best city efficiency, self-charging"),
+    "Petrol": ("~Rs.106/L","17–22 km/L","High price volatility risk"),
+    "Diesel": ("~Rs.94/L","18–25 km/L","Better highway range"),
+    "CNG":    ("~Rs.80/kg","25–30 km/kg","Lowest running cost"),
+    "EV":     ("~Rs.8/kWh","5–7 km/kWh","Zero emission, cheapest per km"),
+    "Hybrid": ("~Rs.106/L","22–28 km/L","Best city efficiency, self-charging"),
 }
 fuel_note = FUEL_DATA.get(fuel_type, ("","",""))
 st.markdown(f"""
 <div class="info-note">
-<strong>{fuel_type}</strong> &nbsp;Â·&nbsp; Price: {fuel_note[0]} &nbsp;Â·&nbsp;
-Efficiency: {fuel_note[1]} &nbsp;Â·&nbsp; {fuel_note[2]}
+<strong>{fuel_type}</strong> &nbsp;·&nbsp; Price: {fuel_note[0]} &nbsp;·&nbsp;
+Efficiency: {fuel_note[1]} &nbsp;·&nbsp; {fuel_note[2]}
 </div>
 """, unsafe_allow_html=True)
 
-# â”€â”€ VISUALIZATION 3: Fuel cost per 15000 km comparison â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ VISUALIZATION 3: Fuel cost per 15000 km comparison ─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€─€
 st.markdown("<div class='chart-label'>ANNUAL RUNNING COST COMPARISON (at 15,000 km/yr)</div>", unsafe_allow_html=True)
 fuel_costs = {"Petrol":  (15000/19)*106/100000,
               "Diesel":  (15000/22)*94/100000,
@@ -513,7 +513,7 @@ if fuel_type == "EV":
     st.markdown("""
     <div style="border:2px dashed #FF2800;padding:16px 20px;background:rgba(255,40,0,0.03);margin-bottom:8px;">
     <strong style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.15em;color:#FF2800;">
-    BATTERY DETAILS â€” Required for health analysis
+    BATTERY DETAILS — Required for health analysis
     </strong>
     </div>
     """, unsafe_allow_html=True)
@@ -529,9 +529,9 @@ if fuel_type == "EV":
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-# SECTION 4 â€” FINANCING
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECTION 4 — FINANCING
+# ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
 <div class="sec-head">
@@ -550,7 +550,7 @@ with fin3:
     loan_rate = st.slider("INTEREST RATE %", 6.0, 20.0, 9.0, 0.25)
 with fin4:
     tenure = st.selectbox("TENURE", [12,24,36,48,60,72,84], index=4,
-                           format_func=lambda x: f"{x} mo Â· {x//12}yr{'' if x//12==1 else 's'}")
+                           format_func=lambda x: f"{x} mo · {x//12}yr{'' if x//12==1 else 's'}")
 
 # EMI
 principal = on_road * (1 - down_pct/100) * 100000
@@ -585,7 +585,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# â”€â”€ VISUALIZATION 4: EMI amortization â€” principal vs interest split â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ─€─€ VISUALIZATION 4: EMI amortization — principal vs interest split ─€─€─€─€─€─€─€─€─€─€─€
 years_axis = list(range(1, tenure+1))
 balance    = principal
 p_list, i_list = [], []
@@ -608,17 +608,17 @@ fig_emi.update_layout(
     yaxis=dict(title="Rs.", gridcolor="#EAEAEA"),
     legend=dict(orientation="h", y=-0.25, font=dict(family="IBM Plex Mono", size=10)),
 )
-st.markdown("<div class='chart-label'>EMI BREAKDOWN â€” PRINCIPAL VS INTEREST (MONTH BY MONTH)</div>", unsafe_allow_html=True)
+st.markdown("<div class='chart-label'>EMI BREAKDOWN — PRINCIPAL VS INTEREST (MONTH BY MONTH)</div>", unsafe_allow_html=True)
 st.plotly_chart(fig_emi, use_container_width=True)
 
 if interest > principal * 0.35:
-    st.warning(f"You'll pay {format_price(interest/100000)} in interest â€” consider a larger down payment or shorter tenure.")
+    st.warning(f"You'll pay {format_price(interest/100000)} in interest — consider a larger down payment or shorter tenure.")
 
 st.markdown("<hr/>", unsafe_allow_html=True)
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 # REVIEW & SUBMIT
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ═══════════════════════════════════════════════════════════════════════════════
 
 st.markdown("""
 <div class="sec-head">
@@ -638,7 +638,7 @@ with rc1:
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Variant</div><div style="font-weight:700;">{variant}</div></div>
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Fuel</div><div style="font-weight:700;">{fuel_type}</div></div>
-            <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Year / Age</div><div style="font-weight:700;">{mfg_year} Â· {age}yr</div></div>
+            <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Year / Age</div><div style="font-weight:700;">{mfg_year} · {age}yr</div></div>
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">City</div><div style="font-weight:700;">{city}</div></div>
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Odometer</div><div style="font-weight:700;">{odometer:,} km</div></div>
             <div><div style="font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:#888;text-transform:uppercase;">Annual KM</div><div style="font-weight:700;">{annual_km:,} km/yr</div></div>
@@ -663,7 +663,7 @@ st.markdown("<br/>", unsafe_allow_html=True)
 
 btn_col, note_col = st.columns([2,1])
 with btn_col:
-    go_btn = st.button(f"ANALYZE {brand.upper()} {model.upper()} â€” START", use_container_width=True, type="primary")
+    go_btn = st.button(f"ANALYZE {brand.upper()} {model.upper()} — START", use_container_width=True, type="primary")
 with note_col:
     st.markdown("""
     <div style="padding:12px 0;color:#888;font-size:0.78rem;line-height:1.8;">
@@ -686,7 +686,7 @@ if go_btn:
         "loan_rate": loan_rate,
         "tenure_months": tenure,
     }
-    st.success(f"âœ… {brand} {model} {variant} â€” analysis ready. Loading...")
+    st.success(f"✅ {brand} {model} {variant} — analysis ready. Loading...")
     st.balloons()
     import time; time.sleep(0.6)
     st.switch_page("pages/02_Vehicle_Health.py")
